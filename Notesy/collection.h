@@ -1,40 +1,40 @@
-//#pragma once
-//#include <ctime>
-//#include <fstream>
-//#include <objbase.h>
-//
-//// TODO: add times... 
-//// std::time_t m_date_created;
-//// std::time_t m_last_modified;
-//// probably store as header and pointers to topics
-//// this might be way overboard... could just use dirs, topics as files...
-//// might be fun though...
-//
-//class Collection
-//{
-//	char *m_name;
-//	GUID m_id;
-//	std::fstream *file;
-//
-//public:
-//	Collection(char *name)
-//	{
-//		// TODO: assert not null or empty name
-//		m_name = name;
-//		CoCreateGuid(&m_id);
-//	}
-//	char *get_name() { return m_name; }
-//	char *set_name(char* new_name) { m_name = new_name; }
-//	GUID get_id() { return m_id; }
-//	//void save();
-//	// list topics
-//	// add topics
-//	// remove topics
-//	// delete self
-//	// rename
-//	~Collection() 
-//	{
-//		// TODO: destroy the fstream...
-//		// remember, if collections are directories, there won't be a file stream, save that for next level (topics)
-//	}
-//};
+#pragma once
+#include <ctime>
+#include <ostream>
+#include <cassert>
+
+// for now, store a list somewhere
+// worry about referencing topics later...
+
+class Collection
+{
+	char *m_name;
+	time_t m_date_created;
+	time_t m_date_modified;
+
+public:
+	Collection(char *name) {
+		assert(("Collection must have name!", name != "" && name != nullptr));
+		m_name = name;
+		time(&m_date_created);
+		time(&m_date_modified);
+	}
+	// --- accessors ---
+	char *get_name() { return m_name; }
+	void set_name(char* new_name) { m_name = new_name; }
+	time_t get_date_created() { return m_date_created; }
+	void set_date_created(time_t date) { m_date_created = date; }
+	time_t get_date_modified(time_t date) { return m_date_modified; }
+	void set_date_modified(time_t date) { m_date_modified = date; }
+	// -----------------
+
+	// friend overload of << operator, returns ostream for chaining printing
+	friend std::ostream& operator<< (std::ostream &out, const Collection &c);
+	
+	// TODO:
+	// list topics
+	// add topics
+	// remove topics
+	// delete self
+	// rename
+};

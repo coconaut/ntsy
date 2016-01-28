@@ -149,6 +149,7 @@
     <ClInclude Include="collection.h" />
     <ClInclude Include="note.h" />
     <ClInclude Include="Notesy.h" />
+    <ClInclude Include="printing.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="topic.h" />
@@ -157,6 +158,7 @@
     <ClCompile Include="collection.cpp" />
     <ClCompile Include="note.cpp" />
     <ClCompile Include="Notesy.cpp" />
+    <ClCompile Include="printing.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
