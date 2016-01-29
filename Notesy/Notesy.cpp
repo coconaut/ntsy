@@ -1,8 +1,9 @@
 #include "stdafx.h"
-#include <iostream>
-#include "notesy.h"
 #include "collection.h"
-#include "printing.h"
+#include "notesy.h"
+#include <iostream>
+#include <vector>
+#include <windows.h>
 
 // --- for debugging mem leaks ---
 #define _CRTDBG_MAP_ALLOC
@@ -21,18 +22,17 @@
 
 
 // --- declarations (to be moved) ---
-NotesyCommand **init_commands();
+std::vector<NotesyCommand *> init_commands();
 void list_collections();
 void test(char *args[]);
 
 
 // --- for debugging ---
 void setCrtFlags();
-// ---------------------
 
 
 // --- constants ---
-//const int CONSOLE_COLOR = 10; // 10 for green or 13 for pink on Windows
+const int CONSOLE_COLOR = 10;
 const char *CONFIG_DIR = "";
 const char *NOTESY_DIR = "D:\notesy_root";
 
@@ -41,40 +41,52 @@ const char *NOTESY_DIR = "D:\notesy_root";
  * Entry point: gets command and launches
  */
 int main() {
-	// --- for debugging ---
+	// for debugging
 	setCrtFlags();
-	// ---------------------
 
-	// TODO: do console logic here, rather than repeat each print, and reset before exit!!!
-	// this will allow us to eliminate printing function and stick with ostream
+	// --- console color changing -----------------------
+	HANDLE hConsoleOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	GetConsoleScreenBufferInfo(hConsoleOut, &csbi);
+	SetConsoleTextAttribute(hConsoleOut, CONSOLE_COLOR);
 
-	auto col = new Collection("Vikas Collection");
+	// --- test a collection ----------------------------------------------------
+	auto col = new Collection("Test Collection");
 	std::cout << "Test Collection I/O operator" << std::endl << *col << std::endl;
 	delete col;
 
-	NotesyCommand **ncmds = init_commands();
-	NotesyCommand *c = ncmds[0];
-	prt::printer(c->get_name());
-	prt::printer(c->get_help());
-	c->run_command(NULL);
-	delete c; // note: really we'll have to loop nc here and delete nc[i], etc.
+
+	// --- test the commands ---------------------
+	{
+		auto ncmds = init_commands();
+		NotesyCommand *c = ncmds[0];
+		std::cout << c->get_name() << std::endl;
+		std::cout << c->get_help() << std::endl;
+		c->run_command(NULL);
+		delete c; // note: really we'll have to loop ncmds here and delete nc[i], etc.
+	}
+
+	// reset old color
+	SetConsoleTextAttribute(hConsoleOut, csbi.wAttributes);
 
 	// --- for debugging ---
+	// NOTE: this must be called after everything has gone out of scope
+	// Vectors in main are tricky, as they'll be in scope until end of prg.
+	// We can use blocks to test though :)
 	_CrtDumpMemoryLeaks();
 	// ---------------------
 	return 0;
 }
 
+
 /**
- * Intializes list of notesy commands.
+ * Intializes vector of notesy commands.
  */
-NotesyCommand **init_commands()
+std::vector<NotesyCommand *> init_commands()
 {
 	// keep these static, so we don't try to access local mem out of scope
 	static NotesyCommand *nc = new NotesyCommand("Test", "This is a test command", test);
-	static NotesyCommand *cmds[] = {
-		nc
-	};
+	std::vector<NotesyCommand *> cmds = {nc};
 	return cmds;
 }
 
@@ -83,6 +95,19 @@ NotesyCommand **init_commands()
 void test(char *args[])
 {
 	std::cout << "TEST" << std::endl;
+}
+
+
+/**
+ * Adds a new collection to our set.
+ */
+void add_collection(char *name)
+{
+	Collection collection(name);
+	// TODO: save / serialize
+
+
+
 }
 
 

@@ -15,6 +15,7 @@ class Collection
 public:
 	Collection(char *name) {
 		assert(("Collection must have name!", name != "" && name != nullptr));
+		// TODO: check for bad chars?
 		m_name = name;
 		time(&m_date_created);
 		time(&m_date_modified);

@@ -36,9 +36,6 @@
     <ClInclude Include="Notesy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="printing.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -54,9 +51,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="note.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="printing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
