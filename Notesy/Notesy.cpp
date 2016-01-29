@@ -9,29 +9,12 @@
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
-// -------------------------------
 
-
-/* TODO:
- - think about serialization format (go for speed, efficiency, simplicity)
-	- for now, text
- - think about interactive typing of note (vs. one shot)
-	- you know, type until Ctrl + D or something
- - think about loading / unloading of objs, I guess this goes with serialization though...
- */
-
-
-// --- declarations (to be moved) ---
-std::vector<NotesyCommand *> init_commands();
-void list_collections();
-void test(char *args[]);
-
-
-// --- for debugging ---
+// for debugging
 void setCrtFlags();
 
 
-// --- constants ---
+// --- constants (some should pull from config instead...) ---
 const int CONSOLE_COLOR = 10;
 const char *CONFIG_DIR = "";
 const char *NOTESY_DIR = "D:\notesy_root";
@@ -104,10 +87,10 @@ void test(char *args[])
 void add_collection(char *name)
 {
 	Collection collection(name);
+	// TODO: check if dir exists, if not create it (outside function)
+	// TODO: check if index file exists, if not, create it (outside function)
 	// TODO: save / serialize
-
-
-
+	
 }
 
 

@@ -1,8 +1,8 @@
 #pragma once
+#include <vector>
 
 // alias for a basic command function
 typedef void cmd_t(char *arg[]);
-
 
 // class for command information and function calls, like shell built-in
 class NotesyCommand
@@ -23,4 +23,9 @@ public:
 	void run_command(char *args[]) { command(args); }
 	
 };
+
+// --- function declarations ---
+std::vector<NotesyCommand *> init_commands();
+void list_collections();
+void test(char *args[]);
 
