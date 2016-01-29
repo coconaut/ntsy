@@ -3,8 +3,8 @@
 #include <ostream>
 #include <cassert>
 
-// for now, store a list somewhere
-// worry about referencing topics later...
+
+void print_header();
 
 class Collection
 {

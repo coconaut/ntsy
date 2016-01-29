@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "collection.h"
 #include "notesy.h"
+#include <iomanip>
 #include <iostream>
 #include <vector>
 #include <windows.h>
@@ -14,7 +15,7 @@
 void setCrtFlags();
 
 
-// --- constants (some should pull from config instead...) ---
+// --- constants ---
 const int CONSOLE_COLOR = 10;
 const char *CONFIG_DIR = "";
 const char *NOTESY_DIR = "D:\notesy_root";
@@ -32,12 +33,13 @@ int main() {
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	GetConsoleScreenBufferInfo(hConsoleOut, &csbi);
 	SetConsoleTextAttribute(hConsoleOut, CONSOLE_COLOR);
+	std::cout << std::endl;
 
-	// --- test a collection ----------------------------------------------------
+	// --- test a collection ----------------------------
 	auto col = new Collection("Test Collection");
-	std::cout << "Test Collection I/O operator" << std::endl << *col << std::endl;
+	print_header();
+	std::cout << *col << std::endl;
 	delete col;
-
 
 	// --- test the commands ---------------------
 	{
@@ -46,8 +48,24 @@ int main() {
 		std::cout << c->get_name() << std::endl;
 		std::cout << c->get_help() << std::endl;
 		c->run_command(NULL);
-		delete c; // note: really we'll have to loop ncmds here and delete nc[i], etc.
+		ncmds[1]->run_command(NULL);
+		clean_up_commands(ncmds);
 	}
+
+	init_config();
+
+	// --- MAIN PROCESS FLOW ---
+	// look for config
+	// if yes:
+		// load config
+		// lookup command 
+		// if found: run it
+		// if not: help display of commands
+	// if no:
+		// ask if they are new / want to init
+		// if yes: init
+		// if no: ask to make new config
+			// if yes: 
 
 	// reset old color
 	SetConsoleTextAttribute(hConsoleOut, csbi.wAttributes);
@@ -69,8 +87,23 @@ std::vector<NotesyCommand *> init_commands()
 {
 	// keep these static, so we don't try to access local mem out of scope
 	static NotesyCommand *nc = new NotesyCommand("Test", "This is a test command", test);
-	std::vector<NotesyCommand *> cmds = {nc};
+	static NotesyCommand *nc2 = new NotesyCommand("Second Test", "This is another test command", test);
+	// init
+	// config
+	// destroy (all notes, notesy dir, config, etc.)
+	std::vector<NotesyCommand *> cmds = {nc, nc2};
 	return cmds;
+}
+
+
+/**
+ * Deallocates the commands.
+ */
+void clean_up_commands(std::vector<NotesyCommand *> cmds) 
+{
+	for (size_t i = 0; i < cmds.size(); i++) {
+		delete cmds[i];
+	}
 }
 
 
@@ -96,14 +129,46 @@ void add_collection(char *name)
 
 /**
  * Creates config file for the first time.
+ * Call from init command (if they specify)
  */
-void init_config(char *notesy_dir) {
-	// create the config file
-	// save in user home
+void init_config() {
+	using std::cout;
+	using std::endl;
+	char dir_buf[200];
+	
+	// TODO: ridiculous ascii art for notesy!!!
+	cout << "Welcome to notesy!" << endl;
+	cout << "Please specify a directory for your notes: " << endl;
+	std::cin.getline(dir_buf, sizeof(dir_buf));
+	// TODO: trim the directory buffer?
+
+	cout << "Checking directory: " << dir_buf << endl;
+	// TODO: check dir
+	cout << "Initializing notesy directory in: " << dir_buf << endl;
+	
+	// TODO: create notesy dir, collections index file
+	cout << "Notesy directory created!" << endl;
+	
+	// color here or only on config? save for config, don't want to do too much here...
+
+
+	// TODO: create and save config file
 	// must point to notesy dir to read later
 	// any other info? ultimately a username, password lock sort of deal?
 
 }
+
+// helper to create a new directory
+bool create_directory(char *path) {
+	return true;
+}
+
+// create file, and possibly
+bool create_file(char *path) {
+	return true;
+}
+
+
 
 
 /**

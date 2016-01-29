@@ -1,11 +1,28 @@
 #include "stdafx.h"
 #include "collection.h"
-#include <ostream>
+#include <iomanip>
+#include <iostream>
 #include <ctime>
 #include <string>
 
 // --- constants ---
 const int TIMESIZE = 26;
+const int COLSIZE = 30;
+
+
+// prints a header for collection / collection list
+void print_header()
+{
+	std::cout << std::left
+		<< std::setw(COLSIZE) << "Collection"
+		<< std::setw(COLSIZE) << "Date Modified"
+		<< std::setw(COLSIZE) << "Date Created"
+		<< std::endl
+		<< std::setw(COLSIZE) << "---"
+		<< std::setw(COLSIZE) << "---"
+		<< std::setw(COLSIZE) << "---"
+		<< std::endl;
+}
 
 
 // remove new lines
@@ -27,9 +44,9 @@ std::ostream& operator<< (std::ostream &out, const Collection &c) {
 
 
 	// write to out stream
-	out << c.m_name << "\t\t"
-		<< "[" << dm << "]\t\t"
-		<< "[" << dc << "]";
+	out << std::setw(COLSIZE) << c.m_name 
+		<< std::setw(COLSIZE) << "[" + dm + "]"
+		<< std::setw(COLSIZE) << "[" + dc + "]";
 	
 	return out;
 }
