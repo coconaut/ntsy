@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CFC2E17B-EE1D-4332-BCF9-6DCACBD78E85}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>Notesy</RootNamespace>
+    <RootNamespace>notesy</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
     <ProjectName>notesy</ProjectName>
   </PropertyGroup>
@@ -148,7 +148,7 @@
   <ItemGroup>
     <ClInclude Include="collection.h" />
     <ClInclude Include="note.h" />
-    <ClInclude Include="Notesy.h" />
+    <ClInclude Include="notesy.h" />
     <ClInclude Include="printing.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -157,7 +157,7 @@
   <ItemGroup>
     <ClCompile Include="collection.cpp" />
     <ClCompile Include="note.cpp" />
-    <ClCompile Include="Notesy.cpp" />
+    <ClCompile Include="notesy.cpp" />
     <ClCompile Include="printing.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include <iostream>
-#include "Notesy.h"
+#include "notesy.h"
 #include "collection.h"
 #include "printing.h"
 
