@@ -5,7 +5,7 @@
 std::vector<NotesyCommand *> init_commands();
 void init_config();
 void list_collections();
-void test(char *args[]);
+void test(std::string args[]);
 void clean_up_commands(std::vector<NotesyCommand *>);
 
 // for debugging

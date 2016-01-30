@@ -5,13 +5,14 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 #include "collection.h"
 #include "console.h"
 
 // --- constants ---
 const int TIMESIZE = 26;
 const int COLSIZE = 30;
-
+const int MAXLENGTH = 200;
 
 void remove_char(std::string &str, char c)
 {
@@ -33,8 +34,9 @@ Collection::Collection(std::string name)
 	// TODO: check for bad chars?
 	// trim spaces
 	// strip newlines especially!!! (or use getline to prevent...)
+	// truncate max length
 	remove_char(name, '\n');
-	// truncate length?
+	remove_char(name, '\t');
 	m_name = name;
 	time(&m_date_created);
 	time(&m_date_modified);
@@ -96,9 +98,12 @@ void Collection::pretty_print()
  * Serialize the Collection.
  */
 std::ostream& operator<< (std::ostream &out, const Collection &c) {
-	out << '"' << c.m_name << '"' << std::endl
-		<< " " << c.m_date_created << " "
-		<< c.m_date_modified 
+	char comma = ',';
+	out << c.m_date_modified
+		<< comma
+		<< c.m_date_created
+		<< comma
+		<< c.m_name
 		<< std::endl;
 	return out;
 }
@@ -108,13 +113,20 @@ std::ostream& operator<< (std::ostream &out, const Collection &c) {
  * Deserialize the Collection. 
  */
 std::istream& operator>> (std::istream &in, Collection &c) {
-	// get the name: may include spaces...
-	std::getline(in, c.m_name);
+	char comma;
+	char buf[MAXLENGTH];
 	in >> c.m_date_created;
+	in >> comma;
 	in >> c.m_date_modified;
+	in >> comma;
+	in.getline(buf, MAXLENGTH);
+	c.m_name = std::string(buf);
 	return in;
 }
 
+/**
+ * Saves a single collection to the list.
+ */
 bool Collection::save (std::string path)
 {
 	std::ofstream outf(path, std::ios::app);
@@ -122,10 +134,52 @@ bool Collection::save (std::string path)
 		std::cerr << "Could not open notesy root directory!!!" << std::endl;
 		return false;
 	}
-
 	outf << *this;
 	return true;
 }
+
+
+/**
+ * Loads up and returns all collections.
+ * TODO: this should be changed to load a map / hash table instead...
+ */
+std::vector<Collection> get_all_collections(std::string path)
+{
+	std::vector<Collection> cols;
+	std::ifstream inf(path);
+	if (!inf)
+		std::cerr << "Oh no!!! Notesy can't find it's index file!!!" << std::endl;
+	else
+	{
+		// order here is important for annoying EOF stuff...
+		Collection col;
+		while (inf >> col)
+			cols.push_back(col);
+	}
+	return cols;
+}
+
+
+
+
+
+/**
+ * Lists all collections. Note: args[0] expects path to index file.
+ */
+void list_all_collections(std::string args[])
+{
+	list_all_collections(args[0]);
+}
+
+void list_all_collections(std::string path)
+{
+	std::vector<Collection> cols = get_all_collections(path);
+	print_header();
+	for (size_t i = 0; i < cols.size(); i++) {
+		cols[i].pretty_print();
+	}
+}
+
 
 // do we want to overload the filestream operator??? or otherwise roll our own serialization?
 // could be a good way to learn

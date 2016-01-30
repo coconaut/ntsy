@@ -1,7 +1,7 @@
 #pragma once
-
+#include <string>
 // alias for a basic command function
-typedef void cmd_t(char *arg[]);
+typedef void cmd_t(std::string args[]);
 
 
 // class for command information and function calls, like shell built-in
@@ -20,6 +20,6 @@ public:
 
 	char *get_name() { return name; }
 	char *get_help() { return help_info; }
-	void run_command(char *args[]) { command(args); }
+	void run_command(std::string args[]) { command(args); }
 
 };

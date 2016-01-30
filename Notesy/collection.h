@@ -3,9 +3,7 @@
 #include <iostream>
 #include <cassert>
 #include <string>
-
-// declarations
-void print_header();
+#include <vector>
 
 
 /**
@@ -49,3 +47,11 @@ public:
 	// delete self
 	// rename
 };
+
+
+// declarations
+void print_header();
+std::vector<Collection> get_all_collections(std::string path);
+void list_all_collections(std::string args[]);
+void list_all_collections(std::string path);
+

@@ -2,8 +2,11 @@
 #include <iomanip>
 #include <iostream>
 #include <fstream>
+#include <cstddef>
+#include <limits>
 #include <string>
 #include <vector>
+#define NOMINMAX // shut up windows.h min and max macros
 #include <windows.h>
 #include "collection.h"
 #include "config.h"
@@ -37,6 +40,9 @@ int main(int argc, char *argv[]) {
 
 		// get dir
 		std::string current_path = get_current_directory();
+		
+		// collections / topics index
+		std::string path = current_path + "\\index.nsy";
 
 		// --- console color changing -----------------------
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -45,30 +51,24 @@ int main(int argc, char *argv[]) {
 
 		// --- test a collection ----------------------------
 
-		std::vector<Collection> cols;
-		std::string path = current_path + "\\index.notesy";
-		std::ifstream inf(path);
-		if (!inf)
-			std::cerr << "Oh no!!!" << std::endl;
-		else
-		{
-			while (inf) {
-				Collection col;
-				inf >> col;
-				cols.push_back(col);
-			}
-		}
 
-		for (size_t i = 0; i < cols.size(); i++) {
-			cols[i].pretty_print();
-		}
-
+		// serialize
 		/*auto col = new Collection("Test Collection");
 		auto col2 = new Collection("Second Collection Yay!!!");
 		std::cout << path << std::endl;
 		col->save(path);
+		col2->save(path);
 		delete col;
-		delete col2*/;
+		delete col2;*/
+
+		// deserialize -> NOTE: in reality, we should load a map / hash table for better lookups...
+		// guarantee uniqueness before serializing anyway...
+	    
+		list_all_collections(path);
+
+		
+
+		
 		// --- test the commands ---------------------
 		/*{
 			auto ncmds = init_commands();
@@ -110,15 +110,25 @@ int main(int argc, char *argv[]) {
 
 /**
  * Intializes vector of notesy commands.
+ * TODO: make this a map...
  */
 std::vector<NotesyCommand *> init_commands()
 {
 	// keep these static, so we don't try to access local mem out of scope
-	static NotesyCommand *nc = new NotesyCommand("Test", "This is a test command", test);
-	static NotesyCommand *nc2 = new NotesyCommand("Second Test", "This is another test command", test);
+	static NotesyCommand *nc = new NotesyCommand("test", "This is a test command", test);
+	static NotesyCommand *nc2 = new NotesyCommand("second_test", "This is another test command", test);
+	static NotesyCommand *list = 
+		new NotesyCommand(
+			"list",
+			"Lists collections.\nIf collection is specified, lists topics.\nIf collection and topic is specific, lists notes.\n", 
+			list_all_collections
+		);
+
+	// add
 	// init
 	// config
 	// destroy (all notes, notesy dir, config, etc.)
+	// if none, display help...
 	std::vector<NotesyCommand *> cmds = { nc, nc2 };
 	return cmds;
 }
@@ -138,7 +148,7 @@ void clean_up_commands(std::vector<NotesyCommand *> cmds)
 /**
  * Just a test.
  */
-void test(char *args[])
+void test(std::string args[])
 {
 	std::cout << "TEST" << std::endl;
 }
