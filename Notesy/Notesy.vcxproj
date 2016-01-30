@@ -147,6 +147,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="collection.h" />
+    <ClInclude Include="command.h" />
+    <ClInclude Include="config.h" />
+    <ClInclude Include="console.h" />
     <ClInclude Include="note.h" />
     <ClInclude Include="notesy.h" />
     <ClInclude Include="stdafx.h" />
@@ -155,6 +158,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="collection.cpp" />
+    <ClCompile Include="config.cpp" />
+    <ClCompile Include="console.cpp" />
     <ClCompile Include="note.cpp" />
     <ClCompile Include="notesy.cpp" />
     <ClCompile Include="stdafx.cpp">
