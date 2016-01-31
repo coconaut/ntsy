@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
 		// deserialize -> NOTE: in reality, we should load a map / hash table for better lookups...
 		// guarantee uniqueness before serializing anyway...
 	    
-		list_all_collections(path);
+		col::list_all_collections(path);
 
 		
 
@@ -121,7 +121,7 @@ std::vector<NotesyCommand *> init_commands()
 		new NotesyCommand(
 			"list",
 			"Lists collections.\nIf collection is specified, lists topics.\nIf collection and topic is specific, lists notes.\n", 
-			list_all_collections
+			col::list_all_collections
 		);
 
 	// add
@@ -159,7 +159,6 @@ void test(std::string args[])
  */
 void add_collection(std::string name)
 {
-	Collection collection(name);
 	// TODO: check if dir exists, if not create it (outside function)
 	// TODO: check if index file exists, if not, create it (outside function)
 	// TODO: save / serialize (by appending to file, shouldn't need to pull
