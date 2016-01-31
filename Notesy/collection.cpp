@@ -16,13 +16,25 @@ namespace col {
 	// --- constants ---
 	const int TIMESIZE = 26;
 	const int COLSIZE = 30;
-	const int MAXLENGTH = 200;
+	const int ABBR_COLSIZE = 10;
+	const int MAXLENGTH = COLSIZE;
 
 	void remove_char(std::string &str, char c)
 	{
 		str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());
 	}
 
+	void remove_whitespace(std::string &str)
+	{
+		remove_char(str, '\n');
+		remove_char(str, '\t');
+		remove_char(str, ' ');
+	}
+
+	void remove_newlines(std::string &str)
+	{
+		remove_char(str, '\n');
+	}
 
 	void trim_char(std::string &str) {
 		// TODO:
@@ -32,16 +44,21 @@ namespace col {
 
 	Collection::Collection() {}
 
-	Collection::Collection(std::string name)
+	Collection::Collection(std::string name, std::string abbr)
 	{
-		assert(("Collection must have name!", !name.empty() && name.compare("")));
-		// TODO: check for bad chars?
-		// trim spaces
-		// strip newlines especially!!! (or use getline to prevent...)
-		// truncate max length
-		remove_char(name, '\n');
-		remove_char(name, '\t');
+		assert(("Collection must have name!", !name.empty() && name.compare("") != 0));
+		assert(("Collection must have abbreviation!", !abbr.empty() && abbr.compare("") != 0));
+		// TODO: check for other bad chars?
+		// TODO: trim whitespace at ends...
+		remove_newlines(name);
+		remove_whitespace(abbr);
+		// TODO: pull the max length from MAXLENGTH
+		assert(("Name can't be more than 30 characters!", name.length() <= MAXLENGTH));
+		assert(("Abbreviation must be exactly 3 characters!", abbr.length() == 3));
+		
+		// set defaults
 		m_name = name;
+		m_abbr = abbr;
 		time(&m_date_created);
 		time(&m_date_modified);
 	}
@@ -58,10 +75,12 @@ namespace col {
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
 		change_console_color(11, &csbi);
 		std::cout << std::left
+			<< std::setw(ABBR_COLSIZE) << "Abbr."
 			<< std::setw(COLSIZE) << "Collection"
-			<< std::setw(COLSIZE) << "Date Modified"
+			<< std::setw(COLSIZE) << "Last Modified"
 			<< std::setw(COLSIZE) << "Date Created"
 			<< std::endl
+			<< std::setw(ABBR_COLSIZE) << "---"
 			<< std::setw(COLSIZE) << "---"
 			<< std::setw(COLSIZE) << "---"
 			<< std::setw(COLSIZE) << "---"
@@ -89,9 +108,10 @@ namespace col {
 		std::string dc = trim_date(buf_created);
 		std::string dm = trim_date(buf_modified);
 
-
 		// write to out stream
-		std::cout << std::left << std::setw(COLSIZE) << m_name
+		std::cout << std::left 
+			<< std::setw(ABBR_COLSIZE) << m_abbr
+			<< std::setw(COLSIZE) << m_name
 			<< std::setw(COLSIZE) << "[" + dm + "]"
 			<< std::setw(COLSIZE) << "[" + dc + "]"
 			<< std::endl;
@@ -102,11 +122,12 @@ namespace col {
 	 * Serialize the Collection.
 	 */
 	std::ostream& operator<< (std::ostream &out, const Collection &c) {
-		char comma = ',';
 		out << c.m_date_modified
-			<< comma
+			<< ','
 			<< c.m_date_created
-			<< comma
+			<< ','
+			<< c.m_abbr
+			<< ' '
 			<< c.m_name
 			<< std::endl;
 		return out;
@@ -117,12 +138,14 @@ namespace col {
 	 * Deserialize the Collection.
 	 */
 	std::istream& operator>> (std::istream &in, Collection &c) {
-		char comma;
+		char delim;
 		char buf[MAXLENGTH];
 		in >> c.m_date_created;
-		in >> comma;
+		in >> delim;
 		in >> c.m_date_modified;
-		in >> comma;
+		in >> delim;
+		in >> c.m_abbr;
+		in.get();
 		in.getline(buf, MAXLENGTH);
 		c.m_name = std::string(buf);
 		return in;
@@ -186,7 +209,7 @@ namespace col {
 		std::map<std::string, Collection> cols;
 		std::ifstream inf(path);
 		if (!inf)
-			std::cerr << "Oh no!!! Notesy can't find it's index file!!!" << std::endl;
+			std::cerr << "Oh no!!! Notesy can't find its index file!!!" << std::endl;
 		else
 		{
 			// order here is important for annoying EOF stuff in while condition...
@@ -220,6 +243,13 @@ namespace col {
 	{
 		list_all_collections(args[0]);
 	}
+
+	// TODO:
+	// adding
+	// removing
+	// renaming
+	// abbreviation + serialize + edit
+	// help
 
 	
 	// version the serialization format -> first 4 chars V___

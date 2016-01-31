@@ -53,8 +53,8 @@ int main(int argc, char *argv[]) {
 
 
 		// serialize
-		auto col1 = new col::Collection("Animals");
-		auto col2 = new col::Collection("Todo List");
+		auto col1 = new col::Collection("Animals", "ANI");
+		auto col2 = new col::Collection("Todo List", "TDO");
 		std::map<std::string, col::Collection> cols;
 		cols[col1->get_name()] = *col1;
 		cols[col2->get_name()] = *col2;
