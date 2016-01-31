@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
 		std::string current_path = get_current_directory();
 		
 		// collections / topics index
-		std::string path = current_path + "\\index.nsy";
+		std::string path = current_path + "\\index.ntsy";
 
 		// --- console color changing -----------------------
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
