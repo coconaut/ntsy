@@ -80,7 +80,7 @@ namespace col {
 	/**
 	 * Prints a Collection object to an ostream.
 	 */
-	void Collection::pretty_print()
+	void Collection::pretty_print() const
 	{
 		// format time strings
 		char buf_created[TIMESIZE], buf_modified[TIMESIZE];
@@ -129,21 +129,53 @@ namespace col {
 	}
 
 	/**
-	 * Saves a single collection to the list.
+	 * Appends a single collection to index file.
 	 */
-	bool Collection::save(std::string path)
+	bool Collection::save(std::string path) const
 	{
 		std::ofstream outf(path, std::ios::app);
 		if (!outf) {
-			std::cerr << "Could not open notesy root directory!!!" << std::endl;
+			std::cerr << "Could not open notesy index!!!" << std::endl;
 			return false;
 		}
 		outf << *this;
 		return true;
 	}
 
-	// TODO need a save for the whole vector / map
+	/**
+	 * Appends a single collection to index file.
+	 * This overload expects an already open filestream.
+	 * Intended for looping.
+	 */
+	bool Collection::save(std::ofstream &outf) const
+	{
+		if (!outf) {
+			std::cerr << "Could not write to notesy index!!!" << std::endl;
+			return false;
+		}
+		outf << *this;
+		return true;
+	}
 
+	/**
+	 * Overwrites index file file all collections in memory.
+	 */
+	bool save_all_collections(std::string path, std::map<std::string, Collection> &cols)
+	{
+		std::ofstream outf(path);
+		if (!outf) {
+			std::cerr << "Could not open notesy index!!!" << std::endl;
+			return false;
+		}
+		bool res = true;
+		for (const auto &iter : cols) {
+			if (!iter.second.save(outf)) {
+				res = false;
+				break;
+			}
+		}
+		return res;
+	}
 
 	/**
 	 * Loads up and returns all collections.
@@ -156,7 +188,7 @@ namespace col {
 			std::cerr << "Oh no!!! Notesy can't find it's index file!!!" << std::endl;
 		else
 		{
-			// order here is important for annoying EOF stuff...
+			// order here is important for annoying EOF stuff in while condition...
 			Collection col;
 			while (inf >> col)
 				cols[col.get_name()] = col;
@@ -166,8 +198,21 @@ namespace col {
 
 
 	/**
+	* Lists all collections.
+	*/
+	void list_all_collections(std::string path)
+	{
+		std::map<std::string, Collection> cols = get_all_collections(path);
+		print_header();
+		// use the const ref so we don't copy
+		for (const auto &iter : cols) {
+			iter.second.pretty_print();
+		}
+	}
+
+	/**
 	 * Lists all collections.
-	 * The first is a convenience overload for consistency with cmd_t pointers.
+	 * A convenience overload for consistency with cmd_t pointers.
 	 * args[0] expects path to index file.
 	 */
 	void list_all_collections(std::string args[])
@@ -175,21 +220,10 @@ namespace col {
 		list_all_collections(args[0]);
 	}
 
-	void list_all_collections(std::string path)
-	{
-		std::map<std::string, Collection> cols = get_all_collections(path);
-		print_header();
-		for (auto &iter : cols) {
-			iter.second.pretty_print();
-		}
-	}
-
-
+	
 	// version the serialization format -> first 4 chars V___
 	// each obj: should serialize self (all props), call serialize method of any child objects...
 	// if child is a vector, first write the size
 	// let's try it! first, without the topic child... then add the map / vector
-
-
 
 }

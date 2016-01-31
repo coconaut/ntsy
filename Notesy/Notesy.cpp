@@ -53,13 +53,14 @@ int main(int argc, char *argv[]) {
 
 
 		// serialize
-		/*auto col = new Collection("Test Collection");
-		auto col2 = new Collection("Second Collection Yay!!!");
-		std::cout << path << std::endl;
-		col->save(path);
-		col2->save(path);
-		delete col;
-		delete col2;*/
+		auto col1 = new col::Collection("Animals");
+		auto col2 = new col::Collection("Todo List");
+		std::map<std::string, col::Collection> cols;
+		cols[col1->get_name()] = *col1;
+		cols[col2->get_name()] = *col2;
+		col::save_all_collections(path, cols);
+		delete col1;
+		delete col2;
 
 		// deserialize -> NOTE: in reality, we should load a map / hash table for better lookups...
 		// guarantee uniqueness before serializing anyway...

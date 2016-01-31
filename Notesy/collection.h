@@ -33,8 +33,9 @@ namespace col {
 		void set_date_modified(time_t date) { m_date_modified = date; }
 
 		// --- methods ---
-		void pretty_print();
-		bool save(std::string path);
+		void pretty_print() const;
+		bool save(std::string path) const;
+		bool save(std::ofstream &outf) const;
 
 		// friend overloads of i/o operators for serialization
 		friend std::ostream& operator<< (std::ostream &out, const Collection &c);
@@ -57,5 +58,6 @@ namespace col {
 	std::map<std::string, Collection> get_all_collections(std::string path);
 	void list_all_collections(std::string args[]);
 	void list_all_collections(std::string path);
+	bool save_all_collections(std::string path, std::map<std::string, Collection> &cols);
 
 }
