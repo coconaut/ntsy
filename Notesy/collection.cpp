@@ -50,6 +50,8 @@ namespace col {
 		assert(("Collection must have abbreviation!", !abbr.empty() && abbr.compare("") != 0));
 		// TODO: check for other bad chars?
 		// TODO: trim whitespace at ends...
+		// TODO: make abbr all alpha
+		// TODO: make abbr all uppercase
 		remove_newlines(name);
 		remove_whitespace(abbr);
 		// TODO: pull the max length from MAXLENGTH
@@ -215,18 +217,17 @@ namespace col {
 			// order here is important for annoying EOF stuff in while condition...
 			Collection col;
 			while (inf >> col)
-				cols[col.get_name()] = col;
+				cols[col.get_abbr()] = col;
 		}
 		return cols;
 	}
 
 
 	/**
-	* Lists all collections.
-	*/
-	void list_all_collections(std::string path)
+	 * Lists all collections.
+	 */
+	void list_all_collections(std::map<std::string, Collection> &cols)
 	{
-		std::map<std::string, Collection> cols = get_all_collections(path);
 		print_header();
 		// use the const ref so we don't copy
 		for (const auto &iter : cols) {
@@ -236,16 +237,32 @@ namespace col {
 
 	/**
 	 * Lists all collections.
-	 * A convenience overload for consistency with cmd_t pointers.
-	 * args[0] expects path to index file.
 	 */
-	void list_all_collections(std::string args[])
+	void list_all_collections(std::string path)
 	{
-		list_all_collections(args[0]);
+		std::map<std::string, Collection> cols = get_all_collections(path);
+		list_all_collections(cols);
+	}
+
+	
+
+	/**
+	 * Adds a collection.
+	 * Makes sure that abbreviation is unique.
+	 */
+	bool add_collection(std::map<std::string, Collection> &cols, std::string path, std::string name, std::string abbr)
+	{
+		bool inserted = false;
+		Collection col(name, abbr);
+		if (cols.find(col.get_abbr()) == cols.end()) {
+			cols[col.get_abbr()] = col;
+			col.save(path);
+			inserted = true;
+		}
+		return inserted;
 	}
 
 	// TODO:
-	// adding
 	// removing
 	// renaming
 	// abbreviation + serialize + edit

@@ -59,8 +59,9 @@ namespace col {
 	// declarations
 	void print_header();
 	std::map<std::string, Collection> get_all_collections(std::string path);
-	void list_all_collections(std::string args[]);
+	void list_all_collections(std::map<std::string, Collection> &cols);
 	void list_all_collections(std::string path);
 	bool save_all_collections(std::string path, std::map<std::string, Collection> &cols);
+	bool add_collection(std::map<std::string, Collection> &cols, std::string path, std::string name, std::string abbr);
 
 }

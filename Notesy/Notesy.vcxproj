@@ -159,6 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="collection.cpp" />
+    <ClCompile Include="command.cpp" />
     <ClCompile Include="config.cpp" />
     <ClCompile Include="console.cpp" />
     <ClCompile Include="note.cpp" />

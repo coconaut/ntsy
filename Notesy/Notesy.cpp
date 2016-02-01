@@ -38,111 +38,66 @@ int main(int argc, char *argv[]) {
 		// for debugging
 		setCrtFlags();
 
-		// get dir
-		std::string current_path = get_current_directory();
-		
-		// collections / topics index
-		std::string path = current_path + "\\index.ntsy";
+		// load config
 
 		// --- console color changing -----------------------
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
 		change_console_color(10, &csbi);
 		std::cout << std::endl;
 
+		//args
+		// 0 is ntsy, 1 is command, rest are args...
+
+		// get dir
+		std::string current_path = get_current_directory();
+		
+		
+
+		// collections / topics index (will pull from config)
+		std::string path = current_path + "\\index.ntsy";
+
+		// load commands
+		cmd::cmd_map_t cmds = cmd::init_commands();
+
+		// lookup and run command
+		if (argc > 1 && cmd::has_command(cmds, argv[1])) {
+			// TODO: pass config object as well...
+			std::vector<std::string> sargs;
+			for (int i = 1; i < argc; i++) {
+				sargs.push_back(std::string(argv[i]));
+			}
+			if (!cmds[argv[1]]->run_command(sargs, path)) // todo show usage if failed??? here or inside?
+				cmds[argv[1]]->pretty_print();
+		}
+		else
+			cmd::show_help(cmds);
+
+		
+
 		// --- test a collection ----------------------------
 
 
 		// serialize
-		auto col1 = new col::Collection("Animals", "ANI");
+		/*auto col1 = new col::Collection("Animals", "ANI");
 		auto col2 = new col::Collection("Todo List", "TDO");
 		std::map<std::string, col::Collection> cols;
 		cols[col1->get_name()] = *col1;
 		cols[col2->get_name()] = *col2;
 		col::save_all_collections(path, cols);
 		delete col1;
-		delete col2;
-
-		// deserialize -> NOTE: in reality, we should load a map / hash table for better lookups...
-		// guarantee uniqueness before serializing anyway...
-	    
-		col::list_all_collections(path);
-
-		
-
-		
-		// --- test the commands ---------------------
-		/*{
-			auto ncmds = init_commands();
-			NotesyCommand *c = ncmds[0];
-			std::cout << c->get_name() << std::endl;
-			std::cout << c->get_help() << std::endl;
-			c->run_command(NULL);
-			ncmds[1]->run_command(NULL);
-			clean_up_commands(ncmds);
-		}*/
+		delete col2;*/
 
 
-		// --- MAIN PROCESS FLOW ---
-		// look for config
-		// if yes:
-			// load config
-			// lookup command 
-			// if found: run it
-			// if not: help display of commands
-		// if no:
-			// ask if they are new / want to init
-			// if yes: init
-			// if no: ask to make new config
-				// if yes: 
+		// clean up commands
+		cmd::clean_up_commands(cmds);
 
 		// reset old color
 		reset_console_color(csbi);
 
-		// --- for debugging ---
-		// NOTE: this must be called after everything has gone out of scope
-		// Vectors in main are tricky, as they'll be in scope until end of prg.
-		// We can use blocks to test though :)
 	}
 	_CrtDumpMemoryLeaks();
 	// ---------------------
 	return 0;
-}
-
-
-/**
- * Intializes vector of notesy commands.
- * TODO: make this a map...
- */
-std::vector<NotesyCommand *> init_commands()
-{
-	// keep these static, so we don't try to access local mem out of scope
-	static NotesyCommand *nc = new NotesyCommand("test", "This is a test command", test);
-	static NotesyCommand *nc2 = new NotesyCommand("second_test", "This is another test command", test);
-	static NotesyCommand *list = 
-		new NotesyCommand(
-			"list",
-			"Lists collections.\nIf collection is specified, lists topics.\nIf collection and topic is specific, lists notes.\n", 
-			col::list_all_collections
-		);
-
-	// add
-	// init
-	// config
-	// destroy (all notes, notesy dir, config, etc.)
-	// if none, display help...
-	std::vector<NotesyCommand *> cmds = { nc, nc2 };
-	return cmds;
-}
-
-
-/**
- * Deallocates the commands.
- */
-void clean_up_commands(std::vector<NotesyCommand *> cmds)
-{
-	for (size_t i = 0; i < cmds.size(); i++) {
-		delete cmds[i];
-	}
 }
 
 
@@ -152,17 +107,6 @@ void clean_up_commands(std::vector<NotesyCommand *> cmds)
 void test(std::string args[])
 {
 	std::cout << "TEST" << std::endl;
-}
-
-
-/**
- * Adds a new collection to our set.
- */
-void add_collection(std::string name)
-{
-	// TODO: check if dir exists, if not create it (outside function)
-	// TODO: check if index file exists, if not, create it (outside function)
-	// TODO: save / serialize (by appending to file, shouldn't need to pull
 }
 
 
