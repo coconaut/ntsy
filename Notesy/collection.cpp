@@ -261,18 +261,4 @@ namespace col {
 		}
 		return inserted;
 	}
-
-	// TODO:
-	// removing
-	// renaming
-	// abbreviation + serialize + edit
-	// help
-
-	
-	// version the serialization format -> first 4 chars V___
-	// each obj: should serialize self (all props), call serialize method of any child objects...
-	// if child is a vector, first write the size
-	// let's try it! first, without the topic child... then add the map / vector
-
-	//$(ProjectName)
 }

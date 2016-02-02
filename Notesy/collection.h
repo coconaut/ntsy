@@ -47,12 +47,6 @@ namespace col {
 		// destructor
 		~Collection();
 
-		// TODO:
-		// list topics
-		// add topics
-		// remove topics
-		// delete self
-		// rename
 	};
 
 

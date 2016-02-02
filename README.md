@@ -2,16 +2,13 @@
 
 ## Description
 
-Notesy is going to be a lightweight command line interface for keeping simple notes.
-Making it for Windows at the moment, writing in C++.
-Eventually it'd be neat to offer some sort of synchronization.
-Also thinking about versioning the notes and allowing some sort of rollbacks.
-Search features are another possibility, but for now it's going to be fairly straightforward.
+Notesy is a lightweight command line interface for keeping simple notes on Windows.
 
-## TODO
-* classes
-* commands
-* decide on serialization strategy
-* command table (think shell) with names, function pointers
-* initialization strategy
-* some sort of config file format, notesy directory, console color
+## Status
+
+Under active development. 
+
+## Commands
+ntsy list [col abbr.] [note abbr] - lists collections, topics, or notes.
+ntsy col - adds a new collection
+ntsy jot -col <col abbr.> <note text>
