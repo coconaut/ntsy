@@ -45,58 +45,51 @@ int main(int argc, char *argv[]) {
 		change_console_color(10, &csbi);
 		std::cout << std::endl;
 
-		//args
-		// 0 is ntsy, 1 is command, rest are args...
+		try
+		{
 
-		// get dir
-		std::string current_path = get_current_directory();
-		
-		
 
-		// collections / topics index (will pull from config)
-		std::string path = current_path + "\\index.ntsy";
 
-		// load commands
-		cmd::cmd_map_t cmds = cmd::init_commands();
+			// get dir
+			std::string current_path = get_current_directory();
 
-		// lookup and run command
-		if (argc > 1 && cmd::has_command(cmds, argv[1])) {
-			// TODO: pass config object as well...
-			std::vector<std::string> sargs;
-			bool isHelp = false;
-			for (int i = 1; i < argc; i++) {
-				auto s = std::string(argv[i]);
-				if (s == "-h" || s == "-help"){
-					isHelp = true;
-					break;
+			// collections / topics index (will pull from config)
+			std::string path = current_path + "\\index.ntsy";
+
+			// load commands
+			cmd::cmd_map_t cmds = cmd::init_commands();
+
+			// lookup and run command
+			if (argc > 1 && cmd::has_command(cmds, argv[1])) {
+				// TODO: pass config object as well...
+				std::vector<std::string> sargs;
+				bool isHelp = false;
+				for (int i = 1; i < argc; i++) {
+					auto s = std::string(argv[i]);
+					if (s == "-h" || s == "-help") {
+						isHelp = true;
+						break;
+					}
+					sargs.push_back(s);
 				}
-				sargs.push_back(s);
+				if (isHelp || !cmds[argv[1]]->run_command(sargs, path)) {
+					cmds[argv[1]]->pretty_print_usage();
+				}
 			}
-			if (isHelp || !cmds[argv[1]]->run_command(sargs, path)) {
-				cmds[argv[1]]->pretty_print_usage();
+			else {
+				cmd::show_descriptions(cmds);
 			}
-		}
-		else
-			cmd::show_descriptions(cmds);
 
 		
-
-		// --- test a collection ----------------------------
-
-
-		// serialize
-		/*auto col1 = new col::Collection("Animals", "ANI");
-		auto col2 = new col::Collection("Todo List", "TDO");
-		std::map<std::string, col::Collection> cols;
-		cols[col1->get_name()] = *col1;
-		cols[col2->get_name()] = *col2;
-		col::save_all_collections(path, cols);
-		delete col1;
-		delete col2;*/
-
-
 		// clean up commands
 		cmd::clean_up_commands(cmds);
+		}
+		catch (...)
+		{
+			// reset old color
+			reset_console_color(csbi);
+			throw;
+		}
 
 		// reset old color
 		reset_console_color(csbi);

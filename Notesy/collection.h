@@ -9,6 +9,8 @@
 
 namespace col {
 
+	
+
 	/**
 	 * Main class for Collection objects. Should ultimately
 	 * contain printing and serialization / deserialization methods?
@@ -50,12 +52,15 @@ namespace col {
 	};
 
 
+	typedef std::map<std::string, Collection> col_map_t;
+
 	// declarations
 	void print_header();
-	std::map<std::string, Collection> get_all_collections(std::string path);
-	void list_all_collections(std::map<std::string, Collection> &cols);
+	col_map_t get_all_collections(std::string path);
+	void list_all_collections(col_map_t &cols);
 	void list_all_collections(std::string path);
-	bool save_all_collections(std::string path, std::map<std::string, Collection> &cols);
-	bool add_collection(std::map<std::string, Collection> &cols, std::string path, std::string name, std::string abbr);
+	bool save_all_collections(std::string path, col_map_t &cols);
+	bool add_collection(col_map_t &cols, std::string path, std::string name, std::string abbr);
+	bool remove_collection(col_map_t &cols, std::string path, std::string abbr);
 
 }

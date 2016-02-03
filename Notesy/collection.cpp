@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <algorithm>
 #include <ctime>
 #include <iomanip>
 #include <iostream>
@@ -19,29 +18,6 @@ namespace col {
 	const int ABBR_COLSIZE = 10;
 	const int MAXLENGTH = COLSIZE;
 
-	void remove_char(std::string &str, char c)
-	{
-		str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());
-	}
-
-	void remove_whitespace(std::string &str)
-	{
-		remove_char(str, '\n');
-		remove_char(str, '\t');
-		remove_char(str, ' ');
-	}
-
-	void remove_newlines(std::string &str)
-	{
-		remove_char(str, '\n');
-	}
-
-	void trim_char(std::string &str) {
-		// TODO:
-	}
-
-
-
 	Collection::Collection() {}
 
 	Collection::Collection(std::string name, std::string abbr)
@@ -52,8 +28,7 @@ namespace col {
 		// TODO: trim whitespace at ends...
 		// TODO: make abbr all alpha
 		// TODO: make abbr all uppercase
-		remove_newlines(name);
-		remove_whitespace(abbr);
+		
 		// TODO: pull the max length from MAXLENGTH
 		assert(("Name can't be more than 30 characters!", name.length() <= MAXLENGTH));
 		assert(("Abbreviation must be exactly 3 characters!", abbr.length() == 3));
@@ -185,7 +160,7 @@ namespace col {
 	/**
 	 * Overwrites index file file all collections in memory.
 	 */
-	bool save_all_collections(std::string path, std::map<std::string, Collection> &cols)
+	bool save_all_collections(std::string path, col_map_t &cols)
 	{
 		std::ofstream outf(path);
 		if (!outf) {
@@ -206,9 +181,9 @@ namespace col {
 	/**
 	 * Loads up and returns all collections.
 	 */
-	std::map<std::string, Collection> get_all_collections(std::string path)
+	col_map_t get_all_collections(std::string path)
 	{
-		std::map<std::string, Collection> cols;
+		col_map_t cols;
 		std::ifstream inf(path);
 		if (!inf)
 			std::cerr << "Oh no!!! Notesy can't find its index file!!!" << std::endl;
@@ -226,7 +201,7 @@ namespace col {
 	/**
 	 * Lists all collections.
 	 */
-	void list_all_collections(std::map<std::string, Collection> &cols)
+	void list_all_collections(col_map_t &cols)
 	{
 		print_header();
 		// use the const ref so we don't copy
@@ -240,7 +215,7 @@ namespace col {
 	 */
 	void list_all_collections(std::string path)
 	{
-		std::map<std::string, Collection> cols = get_all_collections(path);
+		col_map_t cols = get_all_collections(path);
 		list_all_collections(cols);
 	}
 
@@ -250,7 +225,7 @@ namespace col {
 	 * Adds a collection.
 	 * Makes sure that abbreviation is unique.
 	 */
-	bool add_collection(std::map<std::string, Collection> &cols, std::string path, std::string name, std::string abbr)
+	bool add_collection(col_map_t &cols, std::string path, std::string name, std::string abbr)
 	{
 		bool inserted = false;
 		Collection col(name, abbr);
@@ -260,5 +235,18 @@ namespace col {
 			inserted = true;
 		}
 		return inserted;
+	}
+
+
+	/**
+	 * Removes a collection, if it is found.
+	 */
+	bool remove_collection(col_map_t &cols, std::string path, std::string abbr)
+	{
+		size_t erased = cols.erase(abbr);
+		if (erased)
+			erased = save_all_collections(path, cols);
+		
+		return erased;
 	}
 }

@@ -1,10 +1,35 @@
 #include "stdafx.h"
+#include <algorithm>
 #include <iomanip>
 #include <map>
+#include <string>
 #include "command.h"
 #include "collection.h"
 
 namespace cmd {
+
+
+	void remove_char(std::string &str, char c)
+	{
+		str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());
+	}
+
+	void remove_whitespace(std::string &str)
+	{
+		remove_char(str, '\n');
+		remove_char(str, '\t');
+		remove_char(str, ' ');
+	}
+
+	void remove_newlines(std::string &str)
+	{
+		remove_char(str, '\n');
+	}
+
+	void trim_char(std::string &str) {
+		// TODO:
+	}
+
 
 	/**
 	 * NotesyCommand constructor.
@@ -53,29 +78,21 @@ namespace cmd {
 		cmd_map_t cmds;
 		if (cmds.empty())
 		{
-			cmds["list"] = new NotesyCommand("list", "Lists collections, or if collection is specified, list notes.",
-				"[-col <abbr.>]", cmd_list);
-			cmds["col"] = new NotesyCommand("col", "Adds a new collection.",
-				"<name> <abbr.>", cmd_col);
-
-			// do help, then work on col functionality
-			
+			cmds["list"] = new NotesyCommand("list", "Lists collections, or if collection is specified, list notes.", 
+				"[<abbr.>]", cmd_list);
+			cmds["col"] = new NotesyCommand("col", "Adds a new collection.","<name> <abbr.>", cmd_col);
+			cmds["rm"] = new NotesyCommand("rm", "Removes a collection or a note.", "<abbr.>", cmd_rm);
 		}
 
 		return cmds;
 
-		// col
 		// jot
+		// erase
 		// read
+		// edit? (save for last)...
 		// init
 		// config
-		// rm -col -note <Id>
-		// edit? (save for last)...
-		// help
 		// destroy (all notes, notesy dir, config, etc.)
-		// if none, display help...
-		/*std::vector<NotesyCommand *> cmds = { nc, nc2 };
-		return cmds;*/
 	}
 
 
@@ -93,15 +110,29 @@ namespace cmd {
 	/**
 	* Adds a new collection to our set.
 	* Args should be path, name, abbr.
+	* Returns bool of whether this command was executed,
+	* regardless of success.
 	*/
 	bool cmd_col(std::vector<std::string> args, std::string path)
 	{
 		// TODO: check if dir exists, if not error (tell to call init/ config)
 		// TODO: check if index file exists, if not, error (tell to call init / config)
+		// TODO: clean chars
+		// TODO: check col maxlength
 
 		if (args.size() < 3)
-		{
-			//TODO: possibly display usage here...
+			return false;
+
+		remove_newlines(args[1]);
+		remove_whitespace(args[2]);
+
+		if (args[1].empty() || args[1].compare("") == 0) {
+			std::cout << "Name cannot be empty" << std::endl;
+			return false;
+		}
+
+		if (args[2].empty() || args[2].length() != 3) {
+			std::cout << "Abbreviation must be exactly 3 characters." << std::endl;
 			return false;
 		}
 
@@ -110,12 +141,37 @@ namespace cmd {
 		if (col::add_collection(cols, path, args[1], args[2]))
 			col::list_all_collections(cols);
 		else
-			std::cout << "There is already a collection with this abbreviation." << std::endl;
+			std::cout << "Unable to add collection. Please make sure abbreiation is unique." << std::endl;
 
 		return true;
 	}
 
 
+	/**
+	 * Removes a collection by abbreviation.
+	 * Args[1] is expected to be the abbr.
+	 * Returns bool of whether this command was executed,
+	 * regardless of success.
+	 */
+	bool cmd_rm(std::vector<std::string> args, std::string path) {
+		if (args.size() < 2) {
+			return false;
+		}
+		
+		auto cols = col::get_all_collections(path);
+		if (col::remove_collection(cols, path, args[1]))
+			col::list_all_collections(cols);
+		else
+			std::cout << "Unable to erase collection with the abbreviation: " << args[1] << std::endl;
+
+		return true;
+	}
+
+
+	/**
+	 * Lists all collections.
+	 * If abbr. is passed, lists notes under that collection instead.
+	 */
 	bool cmd_list(std::vector<std::string> args, std::string path)
 	{
 		// TODO: check for -col switch (list notes vs list cols)
@@ -123,11 +179,13 @@ namespace cmd {
 		return true;
 	}
 
+
 	void show_descriptions(cmd_map_t &cmds) {
 		for (const auto &iter : cmds) {
 			iter.second->pretty_print_desc();
 		}
 	}
+
 
 	bool has_command(cmd_map_t &cmds, std::string cmd_name) {
 		return (cmds.find(cmd_name) != cmds.end());
