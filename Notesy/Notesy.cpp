@@ -63,14 +63,21 @@ int main(int argc, char *argv[]) {
 		if (argc > 1 && cmd::has_command(cmds, argv[1])) {
 			// TODO: pass config object as well...
 			std::vector<std::string> sargs;
+			bool isHelp = false;
 			for (int i = 1; i < argc; i++) {
-				sargs.push_back(std::string(argv[i]));
+				auto s = std::string(argv[i]);
+				if (s == "-h" || s == "-help"){
+					isHelp = true;
+					break;
+				}
+				sargs.push_back(s);
 			}
-			if (!cmds[argv[1]]->run_command(sargs, path)) // todo show usage if failed??? here or inside?
-				cmds[argv[1]]->pretty_print();
+			if (isHelp || !cmds[argv[1]]->run_command(sargs, path)) {
+				cmds[argv[1]]->pretty_print_usage();
+			}
 		}
 		else
-			cmd::show_help(cmds);
+			cmd::show_descriptions(cmds);
 
 		
 

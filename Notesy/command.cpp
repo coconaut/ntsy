@@ -7,45 +7,60 @@
 namespace cmd {
 
 	/**
-	 * NotesyCommand constructor. 
+	 * NotesyCommand constructor.
 	 */
-	NotesyCommand::NotesyCommand(std::string name, std::string help_info, cmd_t *cmd)
+	NotesyCommand::NotesyCommand(std::string name, std::string desc, std::string usage, cmd_t *cmd)
 	{
 		m_name = name;
-		m_help_info = help_info;
+		m_desc = desc;
+		m_usage = usage;
 		m_command = cmd;
 	}
 
 
 	/**
-	 * Prints command info.
+	 * Prints command help / basic info.
 	 */
-	void NotesyCommand::pretty_print() {
-		// TODO!!!
+	void NotesyCommand::pretty_print_desc() {
 		std::cout
 			<< std::left
-			<< std::setw(10)
+			<< "   "
+			<< std::setw(11)
 			<< m_name
-			<< m_help_info
+			<< m_desc
 			<< std::endl;
 	}
 
 
 	/**
-	 * Intializes vector of notesy commands.
+	* Prints more detailed command usage.
+	*/
+	void NotesyCommand::pretty_print_usage() {
+		std::cout
+			<< std::left
+			<< "usage: ntsy "
+			<< m_name
+			<< " "
+			<< m_usage
+			<< std::endl;
+	}
+
+	/**
+	 * Intializes map of notesy commands.
 	 */
 	cmd_map_t init_commands()
 	{
 		cmd_map_t cmds;
-		cmds["list"] = new NotesyCommand(
-			"list",
-			"Lists collections.",
-			cmd_list
-			);
-		cmds["col"] = new NotesyCommand(
-			"col",
-			"Adds a new collection.",
-			cmd_col);
+		if (cmds.empty())
+		{
+			cmds["list"] = new NotesyCommand("list", "Lists collections, or if collection is specified, list notes.",
+				"[-col <abbr.>]", cmd_list);
+			cmds["col"] = new NotesyCommand("col", "Adds a new collection.",
+				"<name> <abbr.>", cmd_col);
+
+			// do help, then work on col functionality
+			
+		}
 
 		return cmds;
 
@@ -96,11 +111,11 @@ namespace cmd {
 			col::list_all_collections(cols);
 		else
 			std::cout << "There is already a collection with this abbreviation." << std::endl;
-		
+
 		return true;
 	}
 
-	
+
 	bool cmd_list(std::vector<std::string> args, std::string path)
 	{
 		// TODO: check for -col switch (list notes vs list cols)
@@ -108,9 +123,9 @@ namespace cmd {
 		return true;
 	}
 
-	void show_help(cmd_map_t &cmds) {
+	void show_descriptions(cmd_map_t &cmds) {
 		for (const auto &iter : cmds) {
-			iter.second->pretty_print();
+			iter.second->pretty_print_desc();
 		}
 	}
 
