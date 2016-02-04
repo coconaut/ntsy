@@ -8,15 +8,11 @@
 #include <vector>
 #include "collection.h"
 #include "console.h"
+#include "text.h"
 
 
 namespace col {
 
-	// --- constants ---
-	const int TIMESIZE = 26;
-	const int COLSIZE = 30;
-	const int ABBR_COLSIZE = 10;
-	const int MAXLENGTH = COLSIZE;
 
 	Collection::Collection() {}
 
@@ -24,25 +20,17 @@ namespace col {
 	{
 		assert(("Collection must have name!", !name.empty() && name.compare("") != 0));
 		assert(("Collection must have abbreviation!", !abbr.empty() && abbr.compare("") != 0));
-		// TODO: check for other bad chars?
-		// TODO: trim whitespace at ends...
-		// TODO: make abbr all alpha
-		// TODO: make abbr all uppercase
-		
-		// TODO: pull the max length from MAXLENGTH
-		assert(("Name can't be more than 30 characters!", name.length() <= MAXLENGTH));
+		assert(("Name can't be more than " + std::to_string(MAXLENGTH) + " characters!", name.length() <= MAXLENGTH));
 		assert(("Abbreviation must be exactly 3 characters!", abbr.length() == 3));
+
+		// TODO: check for other bad chars?
+
+		// make abbr all uppercase
+		to_all_upper(abbr);
 		
 		// set defaults
 		m_name = name;
 		m_abbr = abbr;
-		time(&m_date_created);
-		time(&m_date_modified);
-	}
-
-	Collection::~Collection()
-	{
-
 	}
 
 	// prints a header for collection / collection list
@@ -66,24 +54,14 @@ namespace col {
 	}
 
 
-	// remove new lines
-	std::string trim_date(char* buf) {
-		std::string s(buf);
-		return s.substr(0, TIMESIZE - 2);
-	}
-
-
 	/**
 	 * Prints a Collection object to an ostream.
 	 */
 	void Collection::pretty_print() const
 	{
 		// format time strings
-		char buf_created[TIMESIZE], buf_modified[TIMESIZE];
-		ctime_s(buf_created, TIMESIZE, &m_date_created);
-		ctime_s(buf_modified, TIMESIZE, &m_date_modified);
-		std::string dc = trim_date(buf_created);
-		std::string dm = trim_date(buf_modified);
+		std::string dc = format_time(&m_date_created);
+		std::string dm = format_time(&m_date_modified);
 
 		// write to out stream
 		std::cout << std::left 
@@ -99,9 +77,9 @@ namespace col {
 	 * Serialize the Collection.
 	 */
 	std::ostream& operator<< (std::ostream &out, const Collection &c) {
-		out << c.m_date_modified
+		out << c.m_date_created
 			<< ','
-			<< c.m_date_created
+			<< c.m_date_modified
 			<< ','
 			<< c.m_abbr
 			<< ' '

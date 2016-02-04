@@ -5,22 +5,24 @@
 #include <map>
 #include <string>
 #include <vector>
-
+#include "auditable.h"
 
 namespace col {
 
-	
+	// --- constants ---
+	const int COLSIZE = 30;
+	const int ABBR_COLSIZE = 10;
+	const int MAXLENGTH = COLSIZE;
+
 
 	/**
 	 * Main class for Collection objects. Should ultimately
 	 * contain printing and serialization / deserialization methods?
 	 */
-	class Collection
+	class Collection : public Auditable
 	{
 		std::string m_name;
 		std::string m_abbr;
-		time_t m_date_created;
-		time_t m_date_modified;
 
 	public:
 		// --- constructors ---
@@ -32,10 +34,6 @@ namespace col {
 		void set_name(std::string name) { m_name = name; }
 		std::string get_abbr() { return m_abbr; }
 		void set_abbr(std::string abbr) { m_abbr = abbr; }
-		time_t get_date_created() { return m_date_created; }
-		void set_date_created(time_t date) { m_date_created = date; }
-		time_t get_date_modified(time_t date) { return m_date_modified; }
-		void set_date_modified(time_t date) { m_date_modified = date; }
 
 		// --- methods ---
 		void pretty_print() const;
@@ -45,9 +43,6 @@ namespace col {
 		// friend overloads of i/o operators for serialization
 		friend std::ostream& operator<< (std::ostream &out, const Collection &c);
 		friend std::istream& operator>> (std::istream &in, Collection &c);
-
-		// destructor
-		~Collection();
 
 	};
 

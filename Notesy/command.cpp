@@ -1,35 +1,12 @@
 #include "stdafx.h"
-#include <algorithm>
 #include <iomanip>
 #include <map>
 #include <string>
 #include "command.h"
 #include "collection.h"
+#include "text.h"
 
 namespace cmd {
-
-
-	void remove_char(std::string &str, char c)
-	{
-		str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());
-	}
-
-	void remove_whitespace(std::string &str)
-	{
-		remove_char(str, '\n');
-		remove_char(str, '\t');
-		remove_char(str, ' ');
-	}
-
-	void remove_newlines(std::string &str)
-	{
-		remove_char(str, '\n');
-	}
-
-	void trim_char(std::string &str) {
-		// TODO:
-	}
-
 
 	/**
 	 * NotesyCommand constructor.
@@ -78,20 +55,20 @@ namespace cmd {
 		cmd_map_t cmds;
 		if (cmds.empty())
 		{
-			cmds["list"] = new NotesyCommand("list", "Lists collections, or if collection is specified, list notes.", 
-				"[<abbr.>]", cmd_list);
+			cmds["list"] = new NotesyCommand("list", "Lists collections.", "", cmd_list);
 			cmds["col"] = new NotesyCommand("col", "Adds a new collection.","<name> <abbr.>", cmd_col);
 			cmds["rm"] = new NotesyCommand("rm", "Removes a collection or a note.", "<abbr.>", cmd_rm);
 		}
 
 		return cmds;
 
-		// jot
-		// erase
-		// read
-		// edit? (save for last)...
-		// init
-		// config
+		// init (welcome message, brief help info, set up dir)
+		// config (change dir, maybe colors...)
+		// jot (quick note, straight into a collection)
+		// erase (removes a note from a collection)
+		// read / open (could open a col, list notes, enter num to read full text of a note, then continue to re-print the list of notes)
+		// launch <num>
+		// edit? (save for last...)
 		// destroy (all notes, notesy dir, config, etc.)
 	}
 
@@ -128,6 +105,11 @@ namespace cmd {
 
 		if (args[1].empty() || args[1].compare("") == 0) {
 			std::cout << "Name cannot be empty" << std::endl;
+			return false;
+		}
+
+		if (args[1].length() > col::MAXLENGTH) {
+			std::cout << "Name must be less than " << std::to_string(col::MAXLENGTH) << " characters" << std::endl;
 			return false;
 		}
 
