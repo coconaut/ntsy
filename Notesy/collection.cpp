@@ -222,9 +222,9 @@ namespace col {
 	bool remove_collection(col_map_t &cols, std::string path, std::string abbr)
 	{
 		size_t erased = cols.erase(abbr);
-		if (erased)
+		if (erased > 0)
 			erased = save_all_collections(path, cols);
 		
-		return erased;
+		return erased > 0;
 	}
 }

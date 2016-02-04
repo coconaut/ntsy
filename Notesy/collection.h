@@ -5,13 +5,12 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "auditable.h"
+#include "base.h"
+#include "text.h"
 
 namespace col {
 
 	// --- constants ---
-	const int COLSIZE = 30;
-	const int ABBR_COLSIZE = 10;
 	const int MAXLENGTH = COLSIZE;
 
 
@@ -19,7 +18,7 @@ namespace col {
 	 * Main class for Collection objects. Should ultimately
 	 * contain printing and serialization / deserialization methods?
 	 */
-	class Collection : public Auditable
+	class Collection : public Base
 	{
 		std::string m_name;
 		std::string m_abbr;
@@ -36,9 +35,9 @@ namespace col {
 		void set_abbr(std::string abbr) { m_abbr = abbr; }
 
 		// --- methods ---
-		void pretty_print() const;
-		bool save(std::string path) const;
-		bool save(std::ofstream &outf) const;
+		virtual void pretty_print() const;
+		virtual bool save(std::string path) const;
+		virtual bool save(std::ofstream &outf) const;
 
 		// friend overloads of i/o operators for serialization
 		friend std::ostream& operator<< (std::ostream &out, const Collection &c);

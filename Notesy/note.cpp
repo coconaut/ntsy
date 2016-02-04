@@ -1,13 +1,43 @@
 #include "stdafx.h"
 #include <ctime>
+#include <iomanip>
+#include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
+#include "console.h"
 #include "note.h"
+#include "text.h"
 
 namespace note {
 
-	void pretty_print() {
-		
+	void Note::pretty_print() const
+	{
+		std::string dc = format_time(&m_date_created);
+		std::string dm = format_time(&m_date_modified);
+		std::cout << std::left
+			<< std::setw(COLSIZE) << "[" + dm + "]"
+			<< std::setw(COLSIZE) << "[" + dc + "]"
+			<< std::endl
+			<< std::endl
+			<< m_text
+			<< std::endl;
+	}
+
+	// prints a header for collection / collection list
+	void print_header()
+	{
+		// consider changiing (and resetting) console color? maybe wrap each part in function...
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		change_console_color(11, &csbi);
+		std::cout << std::left
+			<< std::setw(COLSIZE) << "Last Modified"
+			<< std::setw(COLSIZE) << "Date Created"
+			<< std::endl
+			<< std::setw(COLSIZE) << "---"
+			<< std::setw(COLSIZE) << "---"
+			<< std::endl;
+		reset_console_color(csbi);
 	}
 
 	/**
@@ -43,5 +73,16 @@ namespace note {
 			n.m_text = std::string(&tmp_txt[0]);
 		}
 		return in;
+	}
+
+	bool Note::save(std::ofstream &outf) const {
+		if (!outf) {
+			std::cerr << "Could not write to notesy index!!!" << std::endl;
+			return false;
+		}
+	}
+
+	bool Note::save(std::string path) const {
+		// TODO:
 	}
 }

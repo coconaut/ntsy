@@ -1,11 +1,11 @@
 #include "stdafx.h"
-#include "auditable.h"
+#include "base.h"
 #include <ctime>
 
 /**
  * Auditable constructor: just initializes time fields.
  */
-Auditable::Auditable() {
+Base::Base() {
 	time(&m_date_created);
 	time(&m_date_modified);
 }

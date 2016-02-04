@@ -12,6 +12,8 @@
 #include "config.h"
 #include "console.h"
 #include "notesy.h"
+#include "note.h"
+
 
 // --- for debugging mem leaks ---
 #define _CRTDBG_MAP_ALLOC
@@ -47,8 +49,10 @@ int main(int argc, char *argv[]) {
 
 		try
 		{
-
-
+			note::print_header();
+			auto n = new note::Note("This is some note text.");
+			n->pretty_print();
+			delete n;
 
 			// get dir
 			std::string current_path = get_current_directory();
