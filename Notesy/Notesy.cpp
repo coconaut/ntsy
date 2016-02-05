@@ -49,10 +49,10 @@ int main(int argc, char *argv[]) {
 
 		try
 		{
+			/*auto n = new note::Note("This is some note text.");
 			note::print_header();
-			auto n = new note::Note("This is some note text.");
 			n->pretty_print();
-			delete n;
+			delete n;*/
 
 			// get dir
 			std::string current_path = get_current_directory();

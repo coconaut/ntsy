@@ -107,34 +107,22 @@ namespace col {
 	}
 
 	/**
-	 * Appends a single collection to index file.
-	 */
-	bool Collection::save(std::string path) const
-	{
-		std::ofstream outf(path, std::ios::app);
-		if (!outf) {
-			std::cerr << "Could not open notesy index!!!" << std::endl;
-			return false;
-		}
-		outf << *this;
-		return true;
+	* Got a little funky here. Wanted to make use of the overloaded i/o operators,
+	* but also wanted to inherit base recordable's save methods.
+	* So base uses serialize/deserialize member methods (pure virtuals), and
+	* derived forms can call them and simply use the friend ops within.
+	*/
+	std::ostream& Collection::serialize(std::ostream &out) const {
+		out << *this;
+		return out;
 	}
 
-	/**
-	 * Appends a single collection to index file.
-	 * This overload expects an already open filestream.
-	 * Intended for looping.
-	 */
-	bool Collection::save(std::ofstream &outf) const
-	{
-		if (!outf) {
-			std::cerr << "Could not write to notesy index!!!" << std::endl;
-			return false;
-		}
-		outf << *this;
-		return true;
+	std::istream& Collection::deserialize(std::istream &in) {
+		in >> *this;
+		return in;
 	}
 
+	
 	/**
 	 * Overwrites index file file all collections in memory.
 	 */

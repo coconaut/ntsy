@@ -75,14 +75,19 @@ namespace note {
 		return in;
 	}
 
-	bool Note::save(std::ofstream &outf) const {
-		if (!outf) {
-			std::cerr << "Could not write to notesy index!!!" << std::endl;
-			return false;
-		}
+	/**
+	* Got a little funky here. Wanted to make use of the overloaded i/o operators,
+	* but also wanted to inherit base recordable's save methods.
+	* So base uses serialize/deserialize member methods (pure virtuals), and
+	* derived forms can call them and simply use the friend ops within.
+	*/
+	std::ostream& Note::serialize(std::ostream &out) const {
+		out << *this;
+		return out;
+	} 
+	std::istream& Note::deserialize(std::istream &in) {
+		in >> *this;
+		return in;
 	}
 
-	bool Note::save(std::string path) const {
-		// TODO:
-	}
 }

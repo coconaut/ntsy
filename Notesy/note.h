@@ -1,11 +1,11 @@
 #pragma once
 #include <ctime>
 #include <string>
-#include "base.h"
+#include "recordable.h"
 
 namespace note {
 
-	class Note : public Base 
+	class Note : public Recordable 
 	{
 		std::string m_text;
 	public:
@@ -19,8 +19,8 @@ namespace note {
 			
 		 // methods ------------------------------
 		 virtual void pretty_print() const;
-		 virtual bool save(std::string path) const;
-		 virtual bool save(std::ofstream &outf) const;
+		 virtual std::ostream& serialize(std::ostream &out) const override;
+		 virtual std::istream& deserialize(std::istream &in) override;
 
 		 // friend overloads of i/o operators for serialization
 		 friend std::ostream& operator<< (std::ostream &out, const Note &n);
@@ -28,4 +28,5 @@ namespace note {
 	};
 
 	void print_header();
+	
 }

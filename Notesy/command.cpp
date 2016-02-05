@@ -123,7 +123,7 @@ namespace cmd {
 		if (col::add_collection(cols, path, args[1], args[2]))
 			col::list_all_collections(cols);
 		else
-			std::cout << "Unable to add collection. Please make sure abbreiation is unique." << std::endl;
+			std::cout << "Unable to add collection. Please make sure abbreviation is unique." << std::endl;
 
 		return true;
 	}
