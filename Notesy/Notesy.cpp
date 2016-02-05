@@ -48,17 +48,38 @@ int main(int argc, char *argv[]) {
 		std::cout << std::endl;
 
 		try
-		{
-			/*auto n = new note::Note("This is some note text.");
-			note::print_header();
-			n->pretty_print();
-			delete n;*/
-
+		{			
 			// get dir
 			std::string current_path = get_current_directory();
 
 			// collections / topics index (will pull from config)
 			std::string path = current_path + "\\index.ntsy";
+
+
+			// TESTING NOTE SERIALIZATION --------------------------
+
+			std::string test_path = current_path + "\\ani.ntsy";
+			/*auto n = new note::Note("Hello my name is bingo! Can I have a banana? Eek eek!!!");
+			note::print_header();
+			n->pretty_print();
+			n->save(test_path);
+			delete n;*/
+
+			note::Note nn;
+			std::ifstream iff(test_path);
+			while (iff >> nn)
+			{
+				nn.pretty_print();
+				iff.ignore(1, '\n');
+			}
+			iff.close();
+			
+
+			// DONE TESTING NOTE SERIALIZATION ----------------------
+
+
+
+
 
 			// load commands
 			cmd::cmd_map_t cmds = cmd::init_commands();

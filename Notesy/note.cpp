@@ -69,7 +69,8 @@ namespace note {
 			>> comma;
 		if (in && len) {
 			std::vector<char> tmp_txt(len);
-			in.read(&tmp_txt[0], len);
+			// get seems to work better than read for non-binary...
+			in.get(&tmp_txt[0], len);
 			n.m_text = std::string(&tmp_txt[0]);
 		}
 		return in;
@@ -90,4 +91,17 @@ namespace note {
 		return in;
 	}
 
+	/**
+	 * Adds a note to a collection's note file.
+	 * Returns false if unable to save.
+	 * Command should handle validation of the collection, as 
+	 * well as any updates to date modified field for the collection.
+	 */
+	bool add_note(std::string text, std::string path) {
+		bool inserted = false;
+		Note n(text);
+		if (n.save(path))
+			inserted = true;
+		return inserted;
+	}
 }

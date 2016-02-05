@@ -17,13 +17,12 @@ public:
 	time_t get_date_modified() { return m_date_modified; }
 	void set_date_modified(time_t date) { m_date_modified = date; }
 
-	// virtual methods
-	virtual void pretty_print() const = 0;
+	// methods -----------------------------------
 	bool save(std::string path) const;
 	bool save(std::ofstream &outf) const;
+
+	// pure virtual methods ----------------------------
+	virtual void pretty_print() const = 0;
 	virtual std::ostream& serialize(std::ostream &out) const = 0;
 	virtual std::istream& deserialize(std::istream &in) = 0;
 };
-
-// stream op overloads for serialization
-

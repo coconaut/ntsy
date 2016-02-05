@@ -17,8 +17,8 @@ namespace note {
 		 std::string get_text() { return m_text; }
 		 void set_text(std::string text) { m_text = text; }
 			
-		 // methods ------------------------------
-		 virtual void pretty_print() const;
+		 // methods / overrides ------------------------------
+		 virtual void pretty_print() const override;
 		 virtual std::ostream& serialize(std::ostream &out) const override;
 		 virtual std::istream& deserialize(std::istream &in) override;
 
@@ -27,6 +27,8 @@ namespace note {
 		 friend std::istream& operator>> (std::istream &in, Note &n);
 	};
 
+	// declarations --------------
 	void print_header();
+	bool add_note(std::string text, std::string path);
 	
 }

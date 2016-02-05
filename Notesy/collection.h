@@ -13,7 +13,6 @@ namespace col {
 	// --- constants ---
 	const int MAXLENGTH = COLSIZE;
 
-
 	/**
 	 * Main class for Collection objects. Should ultimately
 	 * contain printing and serialization / deserialization methods?
@@ -34,18 +33,14 @@ namespace col {
 		std::string get_abbr() { return m_abbr; }
 		void set_abbr(std::string abbr) { m_abbr = abbr; }
 
-		// --- methods ---
-		virtual void pretty_print() const;
+		// --- methods / overrides ---
+		virtual void pretty_print() const override;
 		virtual std::ostream& serialize(std::ostream &out) const override;
 		virtual std::istream& deserialize(std::istream &in) override;
 		
 		// friend overloads of i/o operators for serialization
 		friend std::ostream& operator<< (std::ostream &out, const Collection &c);
 		friend std::istream& operator>> (std::istream &in, Collection &c);
-
-		
-		
-
 	};
 
 

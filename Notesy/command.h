@@ -37,6 +37,7 @@ namespace cmd {
 	bool cmd_list(std::vector<std::string> args, std::string path);
 	bool cmd_col(std::vector<std::string> args, std::string path);
 	bool cmd_rm(std::vector<std::string> args, std::string path);
+	bool cmd_jot(std::vector<std::string> args, std::string path);
 	void show_descriptions(cmd_map_t &cmds);
 	bool has_command(cmd_map_t &cmds, std::string cmd_name);
 }

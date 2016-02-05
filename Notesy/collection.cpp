@@ -13,7 +13,6 @@
 
 namespace col {
 
-
 	Collection::Collection() {}
 
 	Collection::Collection(std::string name, std::string abbr)
@@ -140,6 +139,7 @@ namespace col {
 				break;
 			}
 		}
+		outf.close();
 		return res;
 	}
 
@@ -160,6 +160,7 @@ namespace col {
 			while (inf >> col)
 				cols[col.get_abbr()] = col;
 		}
+		inf.close();
 		return cols;
 	}
 

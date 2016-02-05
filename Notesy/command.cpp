@@ -4,6 +4,7 @@
 #include <string>
 #include "command.h"
 #include "collection.h"
+#include "note.h"
 #include "text.h"
 
 namespace cmd {
@@ -57,13 +58,14 @@ namespace cmd {
 		{
 			cmds["list"] = new NotesyCommand("list", "Lists collections.", "", cmd_list);
 			cmds["col"] = new NotesyCommand("col", "Adds a new collection.","<name> <abbr.>", cmd_col);
-			cmds["rm"] = new NotesyCommand("rm", "Removes a collection or a note.", "<abbr.>", cmd_rm);
+			cmds["rm"] = new NotesyCommand("rm", "Removes a collection.", "<abbr.>", cmd_rm);
+			cmds["jot"] = new NotesyCommand("jot", "Adds a note to a collection", "<colleciton abbr.> <text>", cmd_jot);
 		}
 
 		return cmds;
 
 		// init (welcome message, brief help info, set up dir)
-		// config (change dir, maybe colors...)
+		// config (change dir, maybe colors..., show dates, etc.)
 		// jot (quick note, straight into a collection)
 		// erase (removes a note from a collection)
 		// read / open (could open a col, list notes, enter num to read full text of a note, then continue to re-print the list of notes)
@@ -158,6 +160,45 @@ namespace cmd {
 	{
 		// TODO: check for -col switch (list notes vs list cols)
 		col::list_all_collections(path);
+		return true;
+	}
+
+
+	/**
+	 * Adds a note to a collection.
+	 * Expects args[1] to be the abbreviation/
+	 * Expects args[2] to be the text of the note.
+	 * of the collection to add to.
+	 * Verify the collection.
+	 * Get file path (for now, just abbr (MUST CLEAN), but later
+	 * may serialize a guid with the collection obj.
+	 */
+	bool cmd_jot(std::vector<std::string> args, std::string path)
+	{
+		if (args.size() < 3)
+			return false;
+
+		auto cols = col::get_all_collections(path);
+		if (cols.find(args[1]) == cols.end()) {
+			std::cout << "Unable to find collection with abbreviation: " + args[1] << std::endl;
+		}
+		else {
+			// add n to file (using rel for now...)
+			std::string note_file_path = args[1] + ".ntsy";
+			if (note::add_note(args[2], note_file_path))
+			{
+				// update date modified
+				time_t t;
+				time(&t);
+				cols[args[1]].set_date_modified(t);
+				// save collections
+				col::save_all_collections(path, cols);
+				std::cout << "Note added!!!" << std::endl;
+			}
+			else {
+				std::cout << "Unable to add note to collection. Save failed." << std::endl;
+			}
+		}
 		return true;
 	}
 
