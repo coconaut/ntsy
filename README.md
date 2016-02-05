@@ -6,9 +6,10 @@ Notesy is a lightweight command line interface for keeping simple notes on Windo
 
 ## Status
 
-Under active development. 
+Under active development!!!
 
 ## Commands
-ntsy list [col abbr.] [note abbr] - lists collections, topics, or notes.
-ntsy col - adds a new collection
-ntsy jot -col <col abbr.> <note text>
+* ntsy list [<abbr.>] - Lists collections, or if collection is specified, notes.
+* ntsy col <name> <abbr.> - Adds a new collection.
+* ntsy rm <abbr.> - Removes a collection.
+* ntsy jot <abbr.> <text> - Adds a quick note to a collection.
