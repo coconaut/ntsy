@@ -15,12 +15,18 @@ namespace note {
 	{
 		std::string dc = format_time(&m_date_created);
 		std::string dm = format_time(&m_date_modified);
+		std::string sub_str;
+		if (m_text.size() > MAINCOLSIZE)
+			sub_str = m_text.substr(0, MAINCOLSIZE - 5) + "...";
+		else
+			sub_str = m_text;
+		
 		std::cout << std::left
-			<< std::setw(COLSIZE) << "[" + dm + "]"
-			<< std::setw(COLSIZE) << "[" + dc + "]"
+			<< std::setw(5) << m_tmpId
+			<< std::setw(MAINCOLSIZE) << sub_str
+			<< std::setw(DATECOLSIZE) << "[" + dm + "]"
+			<< std::setw(DATECOLSIZE) << "[" + dc + "]"
 			<< std::endl
-			<< std::endl
-			<< m_text
 			<< std::endl;
 	}
 
@@ -31,11 +37,15 @@ namespace note {
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
 		change_console_color(11, &csbi);
 		std::cout << std::left
-			<< std::setw(COLSIZE) << "Last Modified"
-			<< std::setw(COLSIZE) << "Date Created"
+			<< std::setw(5) << "#"
+			<< std::setw(MAINCOLSIZE) << "Note"
+			<< std::setw(DATECOLSIZE) << "Last Modified"
+			<< std::setw(DATECOLSIZE) << "Date Created"
 			<< std::endl
-			<< std::setw(COLSIZE) << "---"
-			<< std::setw(COLSIZE) << "---"
+			<< std::setw(5) << "---"
+			<< std::setw(MAINCOLSIZE) << "---"
+			<< std::setw(DATECOLSIZE) << "---"
+			<< std::setw(DATECOLSIZE) << "---"
 			<< std::endl;
 		reset_console_color(csbi);
 	}
@@ -85,7 +95,7 @@ namespace note {
 	std::ostream& Note::serialize(std::ostream &out) const {
 		out << *this;
 		return out;
-	} 
+	}
 	std::istream& Note::deserialize(std::istream &in) {
 		in >> *this;
 		return in;
@@ -94,7 +104,7 @@ namespace note {
 	/**
 	 * Adds a note to a collection's note file.
 	 * Returns false if unable to save.
-	 * Command should handle validation of the collection, as 
+	 * Command should handle validation of the collection, as
 	 * well as any updates to date modified field for the collection.
 	 */
 	bool add_note(std::string text, std::string path) {
@@ -103,5 +113,48 @@ namespace note {
 		if (n.save(path))
 			inserted = true;
 		return inserted;
+	}
+
+	/**
+	 * Gets all notes in a collection.
+	 */
+	std::vector<Note> get_all_notes(std::string path) {
+		std::vector<Note> notes;
+		std::ifstream inf(path);
+		if (!inf)
+			std::cerr << "Oh no!!! Notesy can't find or open this collection!!! :(" << std::endl << std::endl;
+		else {
+			Note n;
+			int ct = 0;
+			while (inf >> n) {
+				n.set_tmpId(++ct);
+				notes.push_back(n);
+				inf.ignore(1, '\n');
+			}
+			inf.close();
+		}
+		return notes;
+	}
+
+
+	/**
+	* Lists all notes.
+	*/
+	void list_all_notes(std::vector<Note> &notes)
+	{
+		print_header();
+		// use the const ref so we don't copy
+		for (const auto &iter : notes) {
+			iter.pretty_print();
+		}
+	}
+
+	/**
+	* Lists all notes.
+	*/
+	void list_all_notes(std::string path)
+	{
+		auto notes = get_all_notes(path);
+		list_all_notes(notes);
 	}
 }

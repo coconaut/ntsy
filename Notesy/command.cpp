@@ -106,17 +106,17 @@ namespace cmd {
 		remove_whitespace(args[2]);
 
 		if (args[1].empty() || args[1].compare("") == 0) {
-			std::cout << "Name cannot be empty" << std::endl;
+			std::cout << "Oh no!!! Name cannot be empty :[" << std::endl;
 			return false;
 		}
 
 		if (args[1].length() > col::MAXLENGTH) {
-			std::cout << "Name must be less than " << std::to_string(col::MAXLENGTH) << " characters" << std::endl;
+			std::cout << "Oh no!!! Name must be less than " << std::to_string(col::MAXLENGTH) << " characters :[" << std::endl;
 			return false;
 		}
 
 		if (args[2].empty() || args[2].length() != 3) {
-			std::cout << "Abbreviation must be exactly 3 characters." << std::endl;
+			std::cout << "Oh no!!! Abbreviation must be exactly 3 characters. :[" << std::endl;
 			return false;
 		}
 
@@ -125,7 +125,7 @@ namespace cmd {
 		if (col::add_collection(cols, path, args[1], args[2]))
 			col::list_all_collections(cols);
 		else
-			std::cout << "Unable to add collection. Please make sure abbreviation is unique." << std::endl;
+			std::cout << "Oh noooo!!! Unable to add collection. Please make sure abbreviation is unique!!! :[" << std::endl;
 
 		return true;
 	}
@@ -146,7 +146,7 @@ namespace cmd {
 		if (col::remove_collection(cols, path, args[1]))
 			col::list_all_collections(cols);
 		else
-			std::cout << "Unable to erase collection with the abbreviation: " << args[1] << std::endl;
+			std::cout << "Oh no noooo!!! Unable to erase collection with the abbreviation: " << args[1] << "!!! :{" << std::endl;
 
 		return true;
 	}
@@ -158,8 +158,16 @@ namespace cmd {
 	 */
 	bool cmd_list(std::vector<std::string> args, std::string path)
 	{
-		// TODO: check for -col switch (list notes vs list cols)
-		col::list_all_collections(path);
+		// check for collection abbr.
+		if (args.size() > 1) {
+			// list notes
+			std::string note_path = args[1] + ".ntsy";
+			note::list_all_notes(note_path);
+		}
+		else {
+			// otherwise, list all the collections
+			col::list_all_collections(path);
+		}
 		return true;
 	}
 
@@ -180,7 +188,7 @@ namespace cmd {
 
 		auto cols = col::get_all_collections(path);
 		if (cols.find(args[1]) == cols.end()) {
-			std::cout << "Unable to find collection with abbreviation: " + args[1] << std::endl;
+			std::cout << "Oh no!!! Unable to find collection with abbreviation: " + args[1] << "!!! :{" << std::endl;
 		}
 		else {
 			// add n to file (using rel for now...)
@@ -196,7 +204,7 @@ namespace cmd {
 				std::cout << "Note added!!!" << std::endl;
 			}
 			else {
-				std::cout << "Unable to add note to collection. Save failed." << std::endl;
+				std::cout << "Oh noo!!! Unable to add note to collection. Save failed!!! :(((" << std::endl;
 			}
 		}
 		return true;

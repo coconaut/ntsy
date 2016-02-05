@@ -40,14 +40,14 @@ namespace col {
 		change_console_color(11, &csbi);
 		std::cout << std::left
 			<< std::setw(ABBR_COLSIZE) << "Abbr."
-			<< std::setw(COLSIZE) << "Collection"
-			<< std::setw(COLSIZE) << "Last Modified"
-			<< std::setw(COLSIZE) << "Date Created"
+			<< std::setw(MAINCOLSIZE) << "Collection"
+			<< std::setw(DATECOLSIZE) << "Last Modified"
+			<< std::setw(DATECOLSIZE) << "Date Created"
 			<< std::endl
 			<< std::setw(ABBR_COLSIZE) << "---"
-			<< std::setw(COLSIZE) << "---"
-			<< std::setw(COLSIZE) << "---"
-			<< std::setw(COLSIZE) << "---"
+			<< std::setw(MAINCOLSIZE) << "---"
+			<< std::setw(DATECOLSIZE) << "---"
+			<< std::setw(DATECOLSIZE) << "---"
 			<< std::endl;
 		reset_console_color(csbi);
 	}
@@ -65,9 +65,9 @@ namespace col {
 		// write to out stream
 		std::cout << std::left 
 			<< std::setw(ABBR_COLSIZE) << m_abbr
-			<< std::setw(COLSIZE) << m_name
-			<< std::setw(COLSIZE) << "[" + dm + "]"
-			<< std::setw(COLSIZE) << "[" + dc + "]"
+			<< std::setw(MAINCOLSIZE) << m_name
+			<< std::setw(DATECOLSIZE) << "[" + dm + "]"
+			<< std::setw(DATECOLSIZE) << "[" + dc + "]"
 			<< std::endl;
 	}
 
@@ -129,7 +129,7 @@ namespace col {
 	{
 		std::ofstream outf(path);
 		if (!outf) {
-			std::cerr << "Could not open notesy index!!!" << std::endl;
+			std::cerr << "Oh nooo!!! Could not open notesy index!!! :(" << std::endl;
 			return false;
 		}
 		bool res = true;
@@ -152,15 +152,16 @@ namespace col {
 		col_map_t cols;
 		std::ifstream inf(path);
 		if (!inf)
-			std::cerr << "Oh no!!! Notesy can't find its index file!!!" << std::endl;
+			std::cerr << "Oh no!!! Notesy can't find its index file!!! :(" << std::endl;
 		else
 		{
 			// order here is important for annoying EOF stuff in while condition...
 			Collection col;
-			while (inf >> col)
+			while (inf >> col) {
 				cols[col.get_abbr()] = col;
+			}
+			inf.close();
 		}
-		inf.close();
 		return cols;
 	}
 

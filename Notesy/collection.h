@@ -11,7 +11,7 @@
 namespace col {
 
 	// --- constants ---
-	const int MAXLENGTH = COLSIZE;
+	const int MAXLENGTH = MAINCOLSIZE - 1;
 
 	/**
 	 * Main class for Collection objects. Should ultimately

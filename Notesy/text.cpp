@@ -30,13 +30,13 @@ void to_all_upper(std::string &str) {
 	std::transform(str.begin(), str.end(), str.begin(), toupper);
 }
 
-std::string trim_date(char* buf) {
-	std::string s(buf);
-	return s.substr(0, TIMESIZE - 2);
-}
-
 std::string format_time(const time_t *time) {
 	char buf[TIMESIZE];
-	ctime_s(buf, TIMESIZE, time);
-	return trim_date(buf);
+	struct tm *timeinfo = new tm();
+	localtime_s(timeinfo, time);
+	strftime(buf, TIMESIZE, "%D %I:%M", timeinfo);
+		//ctime_s(buf, TIMESIZE, time);
+		//return trim_date(buf);
+	delete timeinfo;
+	return std::string(buf);
 }

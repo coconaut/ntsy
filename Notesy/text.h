@@ -1,7 +1,8 @@
 #pragma once
 
 const int TIMESIZE = 26;
-const int COLSIZE = 30;
+const int DATECOLSIZE = 20;
+const int MAINCOLSIZE = 35;
 const int ABBR_COLSIZE = 10;
 
 void remove_char(std::string &str, char c);
