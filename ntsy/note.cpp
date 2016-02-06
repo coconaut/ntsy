@@ -69,7 +69,6 @@ namespace note {
 	 * Deserialize the note.
 	 */
 	std::istream& operator>> (std::istream &in, Note &n) {
-		// TODO: we are losing a character when we read it in!!!
 		int len = 0;
 		char comma;
 		in >> n.m_date_created
@@ -80,9 +79,11 @@ namespace note {
 			>> comma;
 		if (in && len) {
 			std::vector<char> tmp_txt(len);
-			// get seems to work better than read for non-binary...
-			in.get(&tmp_txt[0], len);
-			n.m_text = std::string(&tmp_txt[0]);
+			// leave room for the null terminator, or buffer will be too small
+			char *buf = new char[len + 1];
+			in.get(buf, len + 1);
+			n.m_text = std::string(buf);
+			delete buf;
 		}
 		return in;
 	}
