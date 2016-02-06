@@ -11,8 +11,9 @@
 #include "collection.h"
 #include "config.h"
 #include "console.h"
-#include "notesy.h"
 #include "note.h"
+#include "ntsy.h"
+
 
 
 // --- for debugging mem leaks ---
@@ -119,7 +120,7 @@ void init_config() {
 	char dir_buf[200];
 
 	// TODO: ridiculous ascii art for notesy!!!
-	cout << "Welcome to notesy!" << endl;
+	cout << "Welcome to ntsy!" << endl;
 	cout << "Please specify a directory for your notes: " << endl;
 	std::cin.getline(dir_buf, sizeof(dir_buf));
 	// TODO: trim the directory buffer?
@@ -129,7 +130,7 @@ void init_config() {
 	cout << "Initializing notesy directory in: " << dir_buf << endl;
 
 	// TODO: create notesy dir, collections index file
-	cout << "Notesy directory created!" << endl;
+	cout << "ntsy directory created!" << endl;
 
 	// color here or only on config? save for config, don't want to do too much here...
 
@@ -138,16 +139,6 @@ void init_config() {
 	// must point to notesy dir to read later
 	// any other info? ultimately a username, password lock sort of deal?
 
-}
-
-// helper to create a new directory
-bool create_directory(std::string path) {
-	return true;
-}
-
-// create file, and possibly
-bool create_file(std::string path) {
-	return true;
 }
 
 

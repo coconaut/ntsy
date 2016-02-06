@@ -21,9 +21,9 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CFC2E17B-EE1D-4332-BCF9-6DCACBD78E85}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>notesy</RootNamespace>
+    <RootNamespace>ntsy</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
-    <ProjectName>notesy</ProjectName>
+    <ProjectName>ntsy</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -150,7 +150,7 @@
     <ClInclude Include="config.h" />
     <ClInclude Include="console.h" />
     <ClInclude Include="note.h" />
-    <ClInclude Include="notesy.h" />
+    <ClInclude Include="ntsy.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="text.h" />
@@ -163,7 +163,7 @@
     <ClCompile Include="config.cpp" />
     <ClCompile Include="console.cpp" />
     <ClCompile Include="note.cpp" />
-    <ClCompile Include="notesy.cpp" />
+    <ClCompile Include="ntsy.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
