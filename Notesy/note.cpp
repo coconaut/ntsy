@@ -69,6 +69,7 @@ namespace note {
 	 * Deserialize the note.
 	 */
 	std::istream& operator>> (std::istream &in, Note &n) {
+		// TODO: we are losing a character when we read it in!!!
 		int len = 0;
 		char comma;
 		in >> n.m_date_created
