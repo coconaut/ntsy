@@ -47,7 +47,7 @@ namespace cmd {
 	void sub_cmd_help();
 	void sub_cmd_read(std::vector<note::Note> &notes);
 	void sub_cmd_edit();
-	void sub_cmd_rm();
+	void sub_cmd_rm(std::string path, std::vector<note::Note> &notes);
 	void sub_cmd_add();
 
 	// --- declarations ---
@@ -58,7 +58,7 @@ namespace cmd {
 	void print_instructions(char *instructions);
 	std::string get_note_file_name(std::string &abbr);
 	bool handle_no_notes(std::vector<note::Note> &notes, std::string &abbr);
-	void loop_interactive(std::vector<note::Note> &notes, std::string col_name);
+	void loop_interactive(std::vector<note::Note> &notes, std::string col_name, std::string note_path);
 	void skip_some_lines(size_t num_lines);
 	bool handle_bad_collection(col::col_map_t cols, std::string abbr);
 	void wait_for_continue(size_t num_lines);

@@ -204,4 +204,43 @@ namespace note {
 		noteId = std::stoi(id, &nonIntChar);
 		return noteId;
 	}
+
+	/**
+	 * Loops note vector and overwrites collection with all notes in memory.
+	 */
+	bool save_all_notes(std::string path, std::vector<Note> &notes)
+	{
+		std::ofstream outf(path);
+		if (!outf) {
+			std::cerr << "Oh nooo!!! Could not open collection note file!!! :(" << std::endl;
+			return false;
+		}
+		bool res = true;
+		for (const auto &iter : notes) {
+			if (!iter.save(outf)) {
+				res = false;
+				break;
+			}
+		}
+		outf.close();
+		return res;
+	}
+
+
+	/**
+	 * Removes a note from a collection.
+	 */
+	bool remove_note(std::string path, std::vector<Note> &notes, size_t index)
+	{
+		if (index > 0 && index <= notes.size())
+		{
+			notes.erase(notes.begin() + index);
+			return save_all_notes(path, notes);
+		}
+		else
+		{
+			std::cout << "That # isn't here!!! (^_&)" << std::endl;
+			return false;
+		}
+	}
 }

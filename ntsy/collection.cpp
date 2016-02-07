@@ -123,13 +123,13 @@ namespace col {
 
 	
 	/**
-	 * Overwrites index file file all collections in memory.
+	 * Overwrites index file with all collections in memory.
 	 */
 	bool save_all_collections(std::string path, col_map_t &cols)
 	{
 		std::ofstream outf(path);
 		if (!outf) {
-			std::cerr << "Oh nooo!!! Could not open notesy index!!! :(" << std::endl;
+			std::cerr << "Oh nooo!!! Could not open ntsy index!!! :(" << std::endl;
 			return false;
 		}
 		bool res = true;

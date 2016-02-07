@@ -39,6 +39,8 @@ namespace note {
 	bool add_note(std::string text, std::string path);
 	void list_all_notes(std::vector<Note> &notes);
 	void list_all_notes(std::string path);
+	bool save_all_notes(std::string path, std::vector<Note> &notes);
+	bool remove_note(std::string path, std::vector<Note> &notes, size_t index);
 	void read_note(std::vector<Note> &notes, int id);
 	int parseNoteId(std::string id);
 	

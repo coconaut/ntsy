@@ -62,23 +62,21 @@ namespace cmd {
 		cmd_map_t cmds;
 		if (cmds.empty())
 		{
-			cmds["list"] = new NtsyCommand("list", "Lists collections. If collection is specified, lists notes.", "[<abbr.>]", cmd_list);
+			cmds["ls"] = new NtsyCommand("ls", "Lists collections. If collection is specified, lists notes.", "[<abbr.>]", cmd_list);
 			cmds["col"] = new NtsyCommand("col", "Adds a new collection.","<name> <abbr.>", cmd_col);
 			cmds["rm"] = new NtsyCommand("rm", "Removes a collection.", "<abbr.>", cmd_rm);
 			cmds["jot"] = new NtsyCommand("jot", "Adds a note to a collection", "<abbr.> <text>", cmd_jot);
-			cmds["open"] = new NtsyCommand("read", "Opens a collection in interactive mode.", "<abbr.>", cmd_open);
+			cmds["open"] = new NtsyCommand("open", "Opens a collection in interactive mode.", "<abbr.>", cmd_open);
 		}
 
 		return cmds;
 
 		// init (welcome message, brief help info, set up dir)
 		// config (change dir, maybe colors..., show dates, etc.)
-
-		// edit <abbr.> -> opens a collection in edit mode
-		// erase (removes a note from a collection)
+		// rename <abbr.> <new name>
+		// reabbr <abbr.> <new abbr.>
 		
-		// launch <num>
-		// edit? (save for last...)
+		// launch <num> (sub command...)
 		// destroy (all notes, notesy dir, config, etc.)
 	}
 
@@ -236,14 +234,14 @@ namespace cmd {
 		{
 			std::string note_path = get_note_file_name(args[1]);
 			auto notes = note::get_all_notes(note_path);
-			loop_interactive(notes, cols[args[1]].get_name());
+			loop_interactive(notes, cols[args[1]].get_name(), note_path);
 		}
 			
 		return true;
 	}
 
 
-	void loop_interactive(std::vector<note::Note> &notes, std::string col_name)
+	void loop_interactive(std::vector<note::Note> &notes, std::string col_name, std::string note_path)
 	{
 		// TODO: massive refactor for sub commands...
 		std::string sub_cmd = "";
@@ -263,7 +261,7 @@ namespace cmd {
 			else if (sub_cmd == "edit")
 				sub_cmd_edit();
 			else if (sub_cmd == "rm")
-				sub_cmd_rm();
+				sub_cmd_rm(note_path, notes);
 			else if (sub_cmd == "add")
 				sub_cmd_add();
 			else if (sub_cmd == "exit")
@@ -280,8 +278,8 @@ namespace cmd {
 	{
 		std::string id;
 		std::cin >> id;
-		skip_some_lines(5);
 		int noteId = note::parseNoteId(id);
+		skip_some_lines(5);
 		note::read_note(notes, noteId);
 		std::cout << std::endl;
 		wait_for_continue(5);
@@ -291,10 +289,10 @@ namespace cmd {
 	{
 		skip_some_lines(5);
 		print_instructions("Available commands:\n\n"
-			"add <#>: adds a new note.\n"
-			"read <#>: reads full note text.\n"
-			"edit <#>: opens note for editing.\n"
-			"rm <#>: deletes a note");
+			"add     - usage: add <#>     - Adds a new note.\n"
+			"read    - usage: read <#>    - Reads full note text.\n"
+			"edit    - usage: edit <#>    - Opens note for editing.\n"
+			"rm      - usage: rm <#>      - Deletes a note");
 		wait_for_continue(5);
 	}
 
@@ -305,10 +303,17 @@ namespace cmd {
 		wait_for_continue(5);
 	}
 
-	void sub_cmd_rm()
+	void sub_cmd_rm(std::string path, std::vector<note::Note> &notes)
 	{
-		// TODO: remove a note, save, save collection modified date, redisplay
-		print_instructions("todo!!!");
+		std::string id;
+		std::cin >> id;
+		int noteId = note::parseNoteId(id);
+		if (note::remove_note(path, notes, noteId - 1))
+		{
+			// note: don't update collection -> really uneccesarry overhead just for a date
+			// that date will only refer to editing the collection meta info itself...
+			std::cout << "Note removed!!!" << std::endl;
+		}
 		wait_for_continue(5);
 	}
 
