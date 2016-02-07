@@ -66,7 +66,7 @@ namespace cmd {
 			cmds["col"] = new NtsyCommand("col", "Adds a new collection.","<name> <abbr.>", cmd_col);
 			cmds["rm"] = new NtsyCommand("rm", "Removes a collection.", "<abbr.>", cmd_rm);
 			cmds["jot"] = new NtsyCommand("jot", "Adds a note to a collection", "<abbr.> <text>", cmd_jot);
-			cmds["read"] = new NtsyCommand("read", "Opens a collection for reading.", "<abbr.>", cmd_read);
+			cmds["open"] = new NtsyCommand("read", "Opens a collection in interactive mode.", "<abbr.>", cmd_open);
 		}
 
 		return cmds;
@@ -198,9 +198,7 @@ namespace cmd {
 			return false;
 
 		auto cols = col::get_all_collections(path);
-		if (!col::has_collection(cols, args[1]))
-			std::cout << "Oh no!!! Unable to find collection with abbreviation: " + args[1] << "!!! :[" << std::endl;
-		else {
+		if (!handle_bad_collection(cols, args[1])) {
 			// add n to file (using rel for now...)
 			std::string note_file_path = get_note_file_name(args[1]);
 			if (note::add_note(args[2], note_file_path))
@@ -222,57 +220,133 @@ namespace cmd {
 
 
 	/**
-	 * Opens a collection for reading mode. 
+	 * Opens a collection for interactive mode. 
 	 * Expects args[1] to be collection abbreviation.
-	 * Prompts user to choose a collection.
-	 * Displays full note text.
+	 * Starts interactive note loop.
 	 */
-	bool cmd_read(std::vector<std::string> args, std::string path)
+	bool cmd_open(std::vector<std::string> args, std::string path)
 	{
 		// check args
 		if (args.size() < 2)
 			return false;
 
-		std::string note_path = get_note_file_name(args[1]);
-		auto notes = note::get_all_notes(note_path);
-		if (!handle_no_notes(notes, args[1]))
+		// get collection, if valid
+		auto cols = col::get_all_collections(path);
+		if (!handle_bad_collection(cols, args[1]))
 		{
-			note::list_all_notes(notes);
-			std::cout << std::endl;
-			loop_read(notes);
+			std::string note_path = get_note_file_name(args[1]);
+			auto notes = note::get_all_notes(note_path);
+			loop_interactive(notes, cols[args[1]].get_name());
 		}
+			
 		return true;
 	}
 
-	void loop_read(std::vector<note::Note> &notes)
+
+	void loop_interactive(std::vector<note::Note> &notes, std::string col_name)
 	{
-		std::string id = "";
-		CONSOLE_SCREEN_BUFFER_INFO csbi;
-		while (id != "exit") {
-			change_console_color(11, &csbi);
-			skip_some_lines();
-			std::cout << "Enter a note # to read. Enter 'exit' to quit." << std::endl << "---" << std::endl;
-			reset_console_color(csbi);
-			std::cin >> id;
-			if (id != "exit") {
-				skip_some_lines();
-				int noteId = note::parseNoteId(id);
-				note::read_note(notes, noteId);
-				change_console_color(11, &csbi);
-				std::cout << std::endl << "Press any key to continue..." << std::endl << "---" << std::endl;
-				reset_console_color(csbi);
-				while (!_kbhit())
-				{}
-				scroll_to_top(csbi);
-				note::list_all_notes(notes);
+		// TODO: massive refactor for sub commands...
+		std::string sub_cmd = "";
+		
+		while (true) {
+			std::cout << col_name << std::endl << "---" << std::endl << std::endl;
+			note::list_all_notes(notes);
+			skip_some_lines(5);
+			print_instructions("Enter a sub-command and note #. Enter 'help' for help. Enter 'exit' to quit.");
+			std::cin >> sub_cmd;
+
+			// TODO: convert to smarted map w/function pointers, like cmd table?
+			if (sub_cmd == "read")
+				sub_cmd_read(notes);
+			else if (sub_cmd == "help")
+				sub_cmd_help();
+			else if (sub_cmd == "edit")
+				sub_cmd_edit();
+			else if (sub_cmd == "rm")
+				sub_cmd_rm();
+			else if (sub_cmd == "add")
+				sub_cmd_add();
+			else if (sub_cmd == "exit")
+				break;
+			else {
+				print_instructions("Sub-command not found!!! :[[[");
+				wait_for_continue(5);
 			}
 		}
-		
 	}
 
-	void skip_some_lines()
+
+	void sub_cmd_read(std::vector<note::Note> &notes)
 	{
-		std::cout << "\n\n" << std::endl;
+		std::string id;
+		std::cin >> id;
+		skip_some_lines(5);
+		int noteId = note::parseNoteId(id);
+		note::read_note(notes, noteId);
+		std::cout << std::endl;
+		wait_for_continue(5);
+	}
+
+	void sub_cmd_help()
+	{
+		skip_some_lines(5);
+		print_instructions("Available commands:\n\n"
+			"add <#>: adds a new note.\n"
+			"read <#>: reads full note text.\n"
+			"edit <#>: opens note for editing.\n"
+			"rm <#>: deletes a note");
+		wait_for_continue(5);
+	}
+
+	void sub_cmd_edit()
+	{
+		// TODO: edit a note, save, save collection modified date, redisplay
+		print_instructions("todo!!!");
+		wait_for_continue(5);
+	}
+
+	void sub_cmd_rm()
+	{
+		// TODO: remove a note, save, save collection modified date, redisplay
+		print_instructions("todo!!!");
+		wait_for_continue(5);
+	}
+
+	void sub_cmd_add()
+	{
+		// TODO: add a note, save, save collection modified date, redisplay
+		print_instructions("todo!!!");
+		wait_for_continue(5);
+	}
+
+	void wait_for_continue(size_t num_lines)
+	{
+		print_instructions("Press any key to continue...");
+		while (!_kbhit()) {}
+		skip_some_lines(num_lines);
+	}
+
+	void print_instructions(char *instructions)
+	{
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		change_console_color(11, &csbi);
+		std::cout << instructions << std::endl << std::endl;
+		reset_console_color(csbi);
+	}
+
+	void skip_some_lines(size_t num_lines)
+	{
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		change_console_color(8, &csbi);
+		std::string lines = "";
+		for (size_t i = 0; i < num_lines; i++)
+		{
+			if (i % 2 == 0)
+				lines += ".";
+			lines += "\n";
+		}
+		std::cout << lines << std::endl;
+		reset_console_color(csbi);
 	}
 
 
@@ -316,5 +390,15 @@ namespace cmd {
 			return true;
 		}
 		return false;
+	}
+
+	bool handle_bad_collection(col::col_map_t cols, std::string abbr)
+	{
+		bool has_col = false;
+		if (!col::has_collection(cols, abbr)) {
+			has_col = true;
+			std::cout << "Oh no!!! Unable to find collection with abbreviation: " + abbr << "!!! :[" << std::endl;
+		}
+		return has_col;
 	}
 }

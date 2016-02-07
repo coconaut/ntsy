@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include "collection.h"
 #include "note.h"
 
 namespace cmd {
@@ -34,20 +35,32 @@ namespace cmd {
 
 	typedef std::map<std::string, NtsyCommand *> cmd_map_t;
 
-	// --- declarations ---
-	cmd_map_t init_commands();
-	void clean_up_commands(cmd_map_t &cmds);
-	void show_descriptions(cmd_map_t &cmds);
-	bool has_command(cmd_map_t &cmds, std::string cmd_name);
 
 	// --- commands ---
 	bool cmd_list(std::vector<std::string> args, std::string path);
 	bool cmd_col(std::vector<std::string> args, std::string path);
 	bool cmd_rm(std::vector<std::string> args, std::string path);
 	bool cmd_jot(std::vector<std::string> args, std::string path);
-	bool cmd_read(std::vector<std::string> args, std::string path);
+	bool cmd_open(std::vector<std::string> args, std::string path);
+
+	// --- sub-commands ---
+	void sub_cmd_help();
+	void sub_cmd_read(std::vector<note::Note> &notes);
+	void sub_cmd_edit();
+	void sub_cmd_rm();
+	void sub_cmd_add();
+
+	// --- declarations ---
+	cmd_map_t init_commands();
+	void clean_up_commands(cmd_map_t &cmds);
+	void show_descriptions(cmd_map_t &cmds);
+	bool has_command(cmd_map_t &cmds, std::string cmd_name);
+	void print_instructions(char *instructions);
 	std::string get_note_file_name(std::string &abbr);
 	bool handle_no_notes(std::vector<note::Note> &notes, std::string &abbr);
-	void loop_read(std::vector<note::Note> &notes);
-	void skip_some_lines();
+	void loop_interactive(std::vector<note::Note> &notes, std::string col_name);
+	void skip_some_lines(size_t num_lines);
+	bool handle_bad_collection(col::col_map_t cols, std::string abbr);
+	void wait_for_continue(size_t num_lines);
+	
 }
