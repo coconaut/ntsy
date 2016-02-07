@@ -2,7 +2,7 @@
 
 ## Description
 
-Ntsy (pronounced "notesy") is a lightweight command line interface for keeping simple notes on Windows.
+ntsy (pronounced "notesy") is a lightweight command line interface for keeping simple notes on Windows.
 
 ## Status
 
