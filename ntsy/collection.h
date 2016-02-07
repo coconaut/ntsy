@@ -13,10 +13,6 @@ namespace col {
 	// --- constants ---
 	const int MAXLENGTH = MAINCOLSIZE - 1;
 
-	/**
-	 * Main class for Collection objects. Should ultimately
-	 * contain printing and serialization / deserialization methods?
-	 */
 	class Collection : public Recordable
 	{
 		std::string m_name;
@@ -46,7 +42,7 @@ namespace col {
 
 	typedef std::map<std::string, Collection> col_map_t;
 
-	// declarations
+	// --- declarations ---
 	void print_header();
 	col_map_t get_all_collections(std::string path);
 	void list_all_collections(col_map_t &cols);
@@ -54,5 +50,5 @@ namespace col {
 	bool save_all_collections(std::string path, col_map_t &cols);
 	bool add_collection(col_map_t &cols, std::string path, std::string name, std::string abbr);
 	bool remove_collection(col_map_t &cols, std::string path, std::string abbr);
-
+	bool has_collection(col_map_t &cols, std::string abbr);
 }

@@ -211,10 +211,15 @@ namespace col {
 	 */
 	bool remove_collection(col_map_t &cols, std::string path, std::string abbr)
 	{
-		size_t erased = cols.erase(abbr);
-		if (erased > 0)
-			erased = save_all_collections(path, cols);
-		
-		return erased > 0;
+		return (cols.erase(abbr) > 0) && save_all_collections(path, cols);
+	}
+
+
+	/**
+	 * Checks collection map
+	 */
+	bool has_collection(col_map_t &cols, std::string abbr)
+	{
+		return (cols.find(abbr) != cols.end());
 	}
 }

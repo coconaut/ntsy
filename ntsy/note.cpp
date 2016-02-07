@@ -88,6 +88,7 @@ namespace note {
 		return in;
 	}
 
+
 	/**
 	* Got a little funky here. Wanted to make use of the overloaded i/o operators,
 	* but also wanted to inherit base recordable's save methods.
@@ -103,6 +104,7 @@ namespace note {
 		return in;
 	}
 
+
 	/**
 	 * Adds a note to a collection's note file.
 	 * Returns false if unable to save.
@@ -117,15 +119,16 @@ namespace note {
 		return inserted;
 	}
 
+
 	/**
 	 * Gets all notes in a collection.
 	 */
 	std::vector<Note> get_all_notes(std::string path) {
 		std::vector<Note> notes;
 		std::ifstream inf(path);
-		if (!inf)
-			std::cerr << "Oh no!!! Notesy can't find or open this collection!!! :(" << std::endl << std::endl;
-		else {
+		/*if (!inf)
+			std::cerr << "Oh no!!! ntsy can't find or open this collection!!! :(" << std::endl << std::endl;*/
+		if (inf) {
 			Note n;
 			int ct = 0;
 			while (inf >> n) {
@@ -150,6 +153,7 @@ namespace note {
 			iter.pretty_print();
 		}
 	}
+
 
 	/**
 	* Lists all notes.

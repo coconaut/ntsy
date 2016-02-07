@@ -10,9 +10,9 @@
 namespace cmd {
 
 	/**
-	 * NotesyCommand constructor.
+	 * NtsyCommand constructor.
 	 */
-	NotesyCommand::NotesyCommand(std::string name, std::string desc, std::string usage, cmd_t *cmd)
+	NtsyCommand::NtsyCommand(std::string name, std::string desc, std::string usage, cmd_t *cmd)
 	{
 		m_name = name;
 		m_desc = desc;
@@ -24,7 +24,7 @@ namespace cmd {
 	/**
 	 * Prints command help / basic info.
 	 */
-	void NotesyCommand::pretty_print_desc() {
+	void NtsyCommand::pretty_print_desc() {
 		std::cout
 			<< std::left
 			<< "   "
@@ -38,7 +38,7 @@ namespace cmd {
 	/**
 	* Prints more detailed command usage.
 	*/
-	void NotesyCommand::pretty_print_usage() {
+	void NtsyCommand::pretty_print_usage() {
 		std::cout
 			<< std::left
 			<< "usage: ntsy "
@@ -56,19 +56,21 @@ namespace cmd {
 		cmd_map_t cmds;
 		if (cmds.empty())
 		{
-			cmds["list"] = new NotesyCommand("list", "Lists collections.", "", cmd_list);
-			cmds["col"] = new NotesyCommand("col", "Adds a new collection.","<name> <abbr.>", cmd_col);
-			cmds["rm"] = new NotesyCommand("rm", "Removes a collection.", "<abbr.>", cmd_rm);
-			cmds["jot"] = new NotesyCommand("jot", "Adds a note to a collection", "<colleciton abbr.> <text>", cmd_jot);
+			cmds["list"] = new NtsyCommand("list", "Lists collections. If collection is specified, lists notes.", "[<abbr.>]", cmd_list);
+			cmds["col"] = new NtsyCommand("col", "Adds a new collection.","<name> <abbr.>", cmd_col);
+			cmds["rm"] = new NtsyCommand("rm", "Removes a collection.", "<abbr.>", cmd_rm);
+			cmds["jot"] = new NtsyCommand("jot", "Adds a note to a collection", "<abbr.> <text>", cmd_jot);
+			cmds["read"] = new NtsyCommand("read", "Opens a collection for reading.", "<abbr.>", cmd_read);
 		}
 
 		return cmds;
 
 		// init (welcome message, brief help info, set up dir)
 		// config (change dir, maybe colors..., show dates, etc.)
-		// jot (quick note, straight into a collection)
+
+		// edit <abbr.> -> opens a collection in edit mode
 		// erase (removes a note from a collection)
-		// read / open (could open a col, list notes, enter num to read full text of a note, then continue to re-print the list of notes)
+		
 		// launch <num>
 		// edit? (save for last...)
 		// destroy (all notes, notesy dir, config, etc.)
@@ -97,7 +99,6 @@ namespace cmd {
 		// TODO: check if dir exists, if not error (tell to call init/ config)
 		// TODO: check if index file exists, if not, error (tell to call init / config)
 		// TODO: clean chars
-		// TODO: check col maxlength
 
 		if (args.size() < 3)
 			return false;
@@ -146,7 +147,7 @@ namespace cmd {
 		if (col::remove_collection(cols, path, args[1]))
 			col::list_all_collections(cols);
 		else
-			std::cout << "Oh no noooo!!! Unable to erase collection with the abbreviation: " << args[1] << "!!! :{" << std::endl;
+			std::cout << "Oh no noooo!!! Unable to erase collection with the abbreviation: " << args[1] << "!!! :[" << std::endl;
 
 		return true;
 	}
@@ -162,7 +163,16 @@ namespace cmd {
 		if (args.size() > 1) {
 			// list notes
 			std::string note_path = args[1] + ".ntsy";
-			note::list_all_notes(note_path);
+			auto notes = note::get_all_notes(note_path);
+			// if no notes, make sure that was a valid collection, otherwise display
+			if (notes.size() == 0) {
+				std::cout << "No notes found for " + args[1] + "."
+					<< std::endl
+					<< "If this is a valid collection, add some notes!!! (^.^)"
+					<< std::endl;
+			}
+			else 
+				note::list_all_notes(note_path);
 		}
 		else {
 			// otherwise, list all the collections
@@ -187,8 +197,8 @@ namespace cmd {
 			return false;
 
 		auto cols = col::get_all_collections(path);
-		if (cols.find(args[1]) == cols.end()) {
-			std::cout << "Oh no!!! Unable to find collection with abbreviation: " + args[1] << "!!! :{" << std::endl;
+		if (!col::has_collection(cols, args[1])) {
+			std::cout << "Oh no!!! Unable to find collection with abbreviation: " + args[1] << "!!! :[" << std::endl;
 		}
 		else {
 			// add n to file (using rel for now...)
@@ -199,6 +209,7 @@ namespace cmd {
 				time_t t;
 				time(&t);
 				cols[args[1]].set_date_modified(t);
+
 				// save collections
 				col::save_all_collections(path, cols);
 				std::cout << "Note added!!!" << std::endl;
@@ -211,6 +222,21 @@ namespace cmd {
 	}
 
 
+	/**
+	 * Opens a collection for reading mode. 
+	 * Prompts user to choose a collection.
+	 * Displays full note text.
+	 */
+	bool cmd_read(std::vector<std::string> args, std::string path)
+	{
+		// TODO:
+		return true;
+	}
+
+
+	/**
+	 * Loops command map and pretty prints.
+	 */
 	void show_descriptions(cmd_map_t &cmds) {
 		for (const auto &iter : cmds) {
 			iter.second->pretty_print_desc();
@@ -218,6 +244,9 @@ namespace cmd {
 	}
 
 
+	/**
+	 * Checks if command is a key of the command map.
+	 */
 	bool has_command(cmd_map_t &cmds, std::string cmd_name) {
 		return (cmds.find(cmd_name) != cmds.end());
 	}
