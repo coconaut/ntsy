@@ -25,7 +25,7 @@
 <h2>
 <a id="description" class="anchor" href="#description" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Description</h2>
 
-<p>ntsy (pronounced "notesy") is a lightweight command line interface for keeping simple notes on Windows.</p>
+<p>ntsy (pronounced "notesy") is a lightweight command-line interface for keeping simple notes on Windows.</p>
 
 <h2>
 <a id="status" class="anchor" href="#status" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Status</h2>
@@ -35,12 +35,16 @@
 <h2>
 <a id="commands" class="anchor" href="#commands" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Commands</h2>
 
-<pre><code>ntsy list [&lt;abbr.&gt;]        - Lists collections, or if collection is specified, notes.
+<pre><code>ntsy ls [&lt;abbr.&gt;]          - Lists collections, or if collection is specified, notes.
 ntsy col &lt;name&gt; &lt;abbr.&gt;    - Adds a new collection.
 ntsy rm &lt;abbr.&gt;            - Removes a collection.
 ntsy jot &lt;abbr.&gt; &lt;text&gt;    - Adds a quick note to a collection.
-ntsy read &lt;abbr.&gt;          - Opens a collection for reading. Interactive prompt to display full note.
-
+ntsy open &lt;abbr.&gt;          - Opens a collection in interactive mode.
+    // sub-commands
+    add &lt;#&gt;           - Adds a new note.
+    read &lt;#&gt;          - Reads full note text.
+    edit &lt;#&gt;          - Opens note for editing.
+    rm &lt;#&gt;            - Deletes a note.
 </code></pre>
 
       <footer class="site-footer">
