@@ -15,4 +15,6 @@ ntsy list [<abbr.>]        - Lists collections, or if collection is specified, n
 ntsy col <name> <abbr.>    - Adds a new collection.
 ntsy rm <abbr.>            - Removes a collection.
 ntsy jot <abbr.> <text>    - Adds a quick note to a collection.
+ntsy read <abbr.>		   - Opens a collection for reading. Interactive prompt to display full note.
+
 ```
