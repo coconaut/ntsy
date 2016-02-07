@@ -30,10 +30,21 @@ namespace note {
 			<< std::endl;
 	}
 
-	// prints a header for collection / collection list
+
+	/**
+	 * Prints a note's full text.
+	 */
+	void Note::print_full_note()
+	{
+		std::cout << m_text << std::endl;
+	}
+
+
+	/**
+	 * Prints a header for note list.
+	 */ 
 	void print_header()
 	{
-		// consider changiing (and resetting) console color? maybe wrap each part in function...
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
 		change_console_color(11, &csbi);
 		std::cout << std::left
@@ -50,6 +61,7 @@ namespace note {
 		reset_console_color(csbi);
 	}
 
+
 	/**
 	 * Serialize the note.
 	 */
@@ -64,6 +76,7 @@ namespace note {
 			<< std::endl;
 		return out;
 	}
+
 
 	/**
 	 * Deserialize the note.
@@ -162,5 +175,33 @@ namespace note {
 	{
 		auto notes = get_all_notes(path);
 		list_all_notes(notes);
+	}
+
+	/**
+	 * Display's that note's full text.
+	 */
+	void read_note(std::vector<Note> &notes, int noteId)
+	{
+		// remember, a noteId is not 0 indexed...
+		if (noteId > 0 && noteId <= notes.size())
+			notes[noteId - 1].print_full_note();
+		else
+			std::cout << "That # isn't here!!! (^_&)" << std::endl;
+	}
+
+
+	/**
+	 * Checks if string is a valid int.
+	 * If it is, returns the int.
+	 * Otherwise returns 0.
+	 * This doesn't check null / empty strings.
+	 */
+	int parseNoteId(std::string id)
+	{
+		// TODO: this errors on non-numbers...
+		size_t nonIntChar = 0;
+		int noteId = 0;
+		noteId = std::stoi(id, &nonIntChar);
+		return noteId;
 	}
 }

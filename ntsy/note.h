@@ -19,8 +19,11 @@ namespace note {
 		 void set_tmpId(int Id) { m_tmpId = Id; }
 		 std::string get_text() { return m_text; }
 		 void set_text(std::string text) { m_text = text; }
-			
-		 // methods / overrides ------------------------------
+		
+		 // --- methods ---
+		 void print_full_note();
+
+		 // --- overrides ------------------------------
 		 virtual void pretty_print() const override;
 		 virtual std::ostream& serialize(std::ostream &out) const override;
 		 virtual std::istream& deserialize(std::istream &in) override;
@@ -36,5 +39,7 @@ namespace note {
 	bool add_note(std::string text, std::string path);
 	void list_all_notes(std::vector<Note> &notes);
 	void list_all_notes(std::string path);
+	void read_note(std::vector<Note> &notes, int id);
+	int parseNoteId(std::string id);
 	
 }

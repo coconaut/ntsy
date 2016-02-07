@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <conio.h>
 #include <iomanip>
 #include <map>
 #include <string>
@@ -6,8 +7,13 @@
 #include "collection.h"
 #include "note.h"
 #include "text.h"
+#include "console.h"
+
 
 namespace cmd {
+
+	// --- constants ----------------
+	const char *NTSY_EXT = ".ntsy";
 
 	/**
 	 * NtsyCommand constructor.
@@ -161,23 +167,18 @@ namespace cmd {
 	{
 		// check for collection abbr.
 		if (args.size() > 1) {
-			// list notes
-			std::string note_path = args[1] + ".ntsy";
+			
+			// get notes
+			std::string note_path = get_note_file_name(args[1]);
 			auto notes = note::get_all_notes(note_path);
-			// if no notes, make sure that was a valid collection, otherwise display
-			if (notes.size() == 0) {
-				std::cout << "No notes found for " + args[1] + "."
-					<< std::endl
-					<< "If this is a valid collection, add some notes!!! (^.^)"
-					<< std::endl;
-			}
-			else 
+
+			// display if any notes, error msg otherwise
+			if (!handle_no_notes(notes, args[1])) 
 				note::list_all_notes(note_path);
 		}
-		else {
-			// otherwise, list all the collections
+		else 
 			col::list_all_collections(path);
-		}
+		
 		return true;
 	}
 
@@ -197,12 +198,11 @@ namespace cmd {
 			return false;
 
 		auto cols = col::get_all_collections(path);
-		if (!col::has_collection(cols, args[1])) {
+		if (!col::has_collection(cols, args[1]))
 			std::cout << "Oh no!!! Unable to find collection with abbreviation: " + args[1] << "!!! :[" << std::endl;
-		}
 		else {
 			// add n to file (using rel for now...)
-			std::string note_file_path = args[1] + ".ntsy";
+			std::string note_file_path = get_note_file_name(args[1]);
 			if (note::add_note(args[2], note_file_path))
 			{
 				// update date modified
@@ -214,9 +214,8 @@ namespace cmd {
 				col::save_all_collections(path, cols);
 				std::cout << "Note added!!!" << std::endl;
 			}
-			else {
+			else
 				std::cout << "Oh noo!!! Unable to add note to collection. Save failed!!! :(((" << std::endl;
-			}
 		}
 		return true;
 	}
@@ -224,13 +223,56 @@ namespace cmd {
 
 	/**
 	 * Opens a collection for reading mode. 
+	 * Expects args[1] to be collection abbreviation.
 	 * Prompts user to choose a collection.
 	 * Displays full note text.
 	 */
 	bool cmd_read(std::vector<std::string> args, std::string path)
 	{
-		// TODO:
+		// check args
+		if (args.size() < 2)
+			return false;
+
+		std::string note_path = get_note_file_name(args[1]);
+		auto notes = note::get_all_notes(note_path);
+		if (!handle_no_notes(notes, args[1]))
+		{
+			note::list_all_notes(notes);
+			std::cout << std::endl;
+			loop_read(notes);
+		}
 		return true;
+	}
+
+	void loop_read(std::vector<note::Note> &notes)
+	{
+		std::string id = "";
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		while (id != "exit") {
+			change_console_color(11, &csbi);
+			skip_some_lines();
+			std::cout << "Enter a note # to read. Enter 'exit' to quit." << std::endl << "---" << std::endl;
+			reset_console_color(csbi);
+			std::cin >> id;
+			if (id != "exit") {
+				skip_some_lines();
+				int noteId = note::parseNoteId(id);
+				note::read_note(notes, noteId);
+				change_console_color(11, &csbi);
+				std::cout << std::endl << "Press any key to continue..." << std::endl << "---" << std::endl;
+				reset_console_color(csbi);
+				while (!_kbhit())
+				{}
+				scroll_to_top(csbi);
+				note::list_all_notes(notes);
+			}
+		}
+		
+	}
+
+	void skip_some_lines()
+	{
+		std::cout << "\n\n" << std::endl;
 	}
 
 
@@ -249,5 +291,30 @@ namespace cmd {
 	 */
 	bool has_command(cmd_map_t &cmds, std::string cmd_name) {
 		return (cmds.find(cmd_name) != cmds.end());
+	}
+
+	/**
+	 * Forms a ntsy file name from abbr.
+	 */
+	std::string get_note_file_name(std::string &abbr)
+	{
+		return abbr + NTSY_EXT;
+	}
+
+
+	/**
+	 * Deals with error message when we find no notes.
+	 */
+	bool handle_no_notes(std::vector<note::Note> &notes, std::string &abbr)
+	{
+		// if no notes, make sure that was a valid collection, otherwise display
+		if (notes.size() == 0) {
+			std::cout << "No notes found for " + abbr + "."
+				<< std::endl
+				<< "If this is a valid collection, add some notes!!! (^.^)"
+				<< std::endl;
+			return true;
+		}
+		return false;
 	}
 }
