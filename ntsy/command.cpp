@@ -289,7 +289,7 @@ namespace cmd {
 	{
 		skip_some_lines(5);
 		print_instructions("Available commands:\n\n"
-			"add     - usage: add <#>     - Adds a new note.\n"
+			"add     - usage: add         - Adds a new note.\n"
 			"read    - usage: read <#>    - Reads full note text.\n"
 			"edit    - usage: edit <#>    - Opens note for editing.\n"
 			"rm      - usage: rm <#>      - Deletes a note");
@@ -298,7 +298,8 @@ namespace cmd {
 
 	void sub_cmd_edit()
 	{
-		// TODO: edit a note, save, save collection modified date, redisplay
+		// TODO: need to check for and launch external editor
+		// TODO: save, save collection modified date, redisplay
 		print_instructions("todo!!!");
 		wait_for_continue(5);
 	}
@@ -319,6 +320,7 @@ namespace cmd {
 
 	void sub_cmd_add()
 	{
+		// TODO: need to launch external editor
 		// TODO: add a note, save, save collection modified date, redisplay
 		print_instructions("todo!!!");
 		wait_for_continue(5);

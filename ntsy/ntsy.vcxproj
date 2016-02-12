@@ -144,6 +144,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="editor.h" />
     <ClInclude Include="recordable.h" />
     <ClInclude Include="collection.h" />
     <ClInclude Include="command.h" />
@@ -157,6 +158,7 @@
     <ClInclude Include="topic.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="editor.cpp" />
     <ClCompile Include="recordable.cpp" />
     <ClCompile Include="collection.cpp" />
     <ClCompile Include="command.cpp" />

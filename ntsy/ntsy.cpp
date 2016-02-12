@@ -11,6 +11,7 @@
 #include "collection.h"
 #include "config.h"
 #include "console.h"
+#include "editor.h"
 #include "note.h"
 #include "ntsy.h"
 
@@ -22,15 +23,17 @@
 #include <crtdbg.h>
 
 
-std::string get_current_directory()
-{
-	wchar_t buffer[MAX_PATH];
-	GetModuleFileName(NULL, buffer, MAX_PATH);
-	std::wstring ws(buffer);
-	std::string fullpath(ws.begin(), ws.end());
-	std::string::size_type pos = fullpath.find_last_of("\\/");
-	return fullpath.substr(0, pos);
-}
+
+//
+//std::string get_current_directory()
+//{
+//	wchar_t buffer[MAX_PATH];
+//	GetModuleFileName(NULL, buffer, MAX_PATH);
+//	std::wstring ws(buffer);
+//	std::string fullpath(ws.begin(), ws.end());
+//	std::string::size_type pos = fullpath.find_last_of("\\/");
+//	return fullpath.substr(0, pos);
+//}
 
 
 /**
@@ -41,7 +44,13 @@ int main(int argc, char *argv[]) {
 		// for debugging
 		setCrtFlags();
 
+		
 		// load config
+
+		//launch_editor();
+
+		std::cout << "Done launching editor..." << std::endl;
+
 
 		// --- console color changing -----------------------
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -50,11 +59,9 @@ int main(int argc, char *argv[]) {
 
 		try
 		{			
-			// get dir
-			std::string current_path = get_current_directory();
-
+			
 			// collections / topics index (will pull from config)
-			std::string path = current_path + "\\index.ntsy";
+			std::string path = "./index.ntsy";
 
 			// load commands
 			cmd::cmd_map_t cmds = cmd::init_commands();
@@ -98,15 +105,6 @@ int main(int argc, char *argv[]) {
 	_CrtDumpMemoryLeaks();
 	// ---------------------
 	return 0;
-}
-
-
-/**
- * Just a test.
- */
-void test(std::string args[])
-{
-	std::cout << "TEST" << std::endl;
 }
 
 

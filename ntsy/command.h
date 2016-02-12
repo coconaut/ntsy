@@ -49,6 +49,7 @@ namespace cmd {
 	void sub_cmd_edit();
 	void sub_cmd_rm(std::string path, std::vector<note::Note> &notes);
 	void sub_cmd_add();
+	void sub_cmd_edit();
 
 	// --- declarations ---
 	cmd_map_t init_commands();

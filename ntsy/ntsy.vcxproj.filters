@@ -48,6 +48,9 @@
     <ClInclude Include="ntsy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="editor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -78,6 +81,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ntsy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="editor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
