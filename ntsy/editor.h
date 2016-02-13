@@ -1,11 +1,9 @@
 #pragma once
+#include <windows.h>
+#include "note.h"
 
-// goal is to execvp the editor of choice (from config ultimately)
-// redirect in / out
-// get the results on save, and save it!
 
-// start with vim hardcoded
-// exec it successfully and return 
-// worry about input / output
-
-int launch_editor();
+bool launch_editor(std::wstring path, note::Note &note);
+void create_child_process(PROCESS_INFORMATION &piProcInfo, std::wstring path);
+void error_exit(PTSTR);
+bool create_tmp_file(std::wstring path, note::Note n);

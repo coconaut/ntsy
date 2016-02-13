@@ -46,10 +46,8 @@ int main(int argc, char *argv[]) {
 
 		
 		// load config
-
-		//launch_editor();
-
-		std::cout << "Done launching editor..." << std::endl;
+		note::Note n("This is a test note!!!");
+		bool success = launch_editor(std::wstring(L"test.txt"), n);
 
 
 		// --- console color changing -----------------------

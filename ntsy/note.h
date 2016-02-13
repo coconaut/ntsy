@@ -1,6 +1,7 @@
 #pragma once
 #include <ctime>
 #include <string>
+#include <vector>
 #include "recordable.h"
 
 namespace note {
