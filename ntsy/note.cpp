@@ -8,6 +8,7 @@
 #include "console.h"
 #include "note.h"
 #include "text.h"
+#include "editor.h"
 
 namespace note {
 
@@ -182,11 +183,26 @@ namespace note {
 	 */
 	void read_note(std::vector<Note> &notes, int noteId)
 	{
-		// remember, a noteId is not 0 indexed...
-		if (noteId > 0 && noteId <= notes.size())
+		
+		if (check_note_is_there(notes, noteId))
 			notes[noteId - 1].print_full_note();
-		else
+		
+	}
+
+
+	/**
+	 * Just a helper to make sure we're in the vector bounds
+	 * and display an error message if not.
+	 */
+	bool check_note_is_there(std::vector<Note> &notes, int noteId)
+	{
+		// remember, a noteId is not 0 indexed...
+		if (noteId <= 0 || noteId > notes.size())
+		{
 			std::cout << "That # isn't here!!! (^_&)" << std::endl;
+			return false;
+		}
+		return true;
 	}
 
 

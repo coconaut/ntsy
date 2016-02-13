@@ -44,5 +44,5 @@ namespace note {
 	bool remove_note(std::string path, std::vector<Note> &notes, size_t index);
 	void read_note(std::vector<Note> &notes, int id);
 	int parseNoteId(std::string id);
-	
+	bool check_note_is_there(std::vector<Note> &notes, int noteId);
 }

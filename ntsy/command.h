@@ -46,10 +46,9 @@ namespace cmd {
 	// --- sub-commands ---
 	void sub_cmd_help();
 	void sub_cmd_read(std::vector<note::Note> &notes);
-	void sub_cmd_edit();
+	void sub_cmd_edit(std::string note_path, std::vector<note::Note> &notes);
 	void sub_cmd_rm(std::string path, std::vector<note::Note> &notes);
 	void sub_cmd_add();
-	void sub_cmd_edit();
 
 	// --- declarations ---
 	cmd_map_t init_commands();

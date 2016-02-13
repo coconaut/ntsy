@@ -23,19 +23,6 @@
 #include <crtdbg.h>
 
 
-
-//
-//std::string get_current_directory()
-//{
-//	wchar_t buffer[MAX_PATH];
-//	GetModuleFileName(NULL, buffer, MAX_PATH);
-//	std::wstring ws(buffer);
-//	std::string fullpath(ws.begin(), ws.end());
-//	std::string::size_type pos = fullpath.find_last_of("\\/");
-//	return fullpath.substr(0, pos);
-//}
-
-
 /**
  * Entry point: gets command and launches
  */
@@ -46,9 +33,7 @@ int main(int argc, char *argv[]) {
 
 		
 		// load config
-		note::Note n("This is a test note!!!");
-		bool success = launch_editor(std::wstring(L"test.txt"), n);
-
+		
 
 		// --- console color changing -----------------------
 		CONSOLE_SCREEN_BUFFER_INFO csbi;

@@ -8,7 +8,7 @@
 #include "note.h"
 #include "text.h"
 #include "console.h"
-
+#include "editor.h"
 
 namespace cmd {
 
@@ -243,7 +243,6 @@ namespace cmd {
 
 	void loop_interactive(std::vector<note::Note> &notes, std::string col_name, std::string note_path)
 	{
-		// TODO: massive refactor for sub commands...
 		std::string sub_cmd = "";
 		
 		while (true) {
@@ -259,7 +258,7 @@ namespace cmd {
 			else if (sub_cmd == "help")
 				sub_cmd_help();
 			else if (sub_cmd == "edit")
-				sub_cmd_edit();
+				sub_cmd_edit(note_path, notes);
 			else if (sub_cmd == "rm")
 				sub_cmd_rm(note_path, notes);
 			else if (sub_cmd == "add")
@@ -296,11 +295,26 @@ namespace cmd {
 		wait_for_continue(5);
 	}
 
-	void sub_cmd_edit()
+	void sub_cmd_edit(std::string note_path, std::vector<note::Note> &notes)
 	{
-		// TODO: need to check for and launch external editor
-		// TODO: save, save collection modified date, redisplay
-		print_instructions("todo!!!");
+		bool success = false;
+		
+		// get id
+		std::string id;
+		std::cin >> id;
+		int noteId = note::parseNoteId(id);
+		
+		// launch the editor
+		if (note::check_note_is_there(notes, noteId)){
+			success = launch_editor(notes[noteId - 1]);
+		}
+
+		// save and display
+		if (success) {
+			note::save_all_notes(note_path, notes);
+			std::cout << "Note updated!!! (^^)" << std::endl;
+		}
+
 		wait_for_continue(5);
 	}
 

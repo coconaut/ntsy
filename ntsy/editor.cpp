@@ -14,16 +14,20 @@
  * Try to launch it in editor.
  * On success, read the file back in to the note and save.
  */
-bool launch_editor(std::wstring path, note::Note &note) {
-	
+bool launch_editor(note::Note &note) {
+	// TODO: we should really pass in config and create
+	// this is the ntsy dir, not the current dir, especially
+	// for write permissions...
+	std::wstring tmp_path = L"__tmp.ntsy";
+
 	// --- security attributes ---
 	SECURITY_ATTRIBUTES saAttr;
 	saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
 	saAttr.bInheritHandle = TRUE;
 	saAttr.lpSecurityDescriptor = NULL;
 
-	// TODO: create tmp file (path) with note's text
-	if (!create_tmp_file(path, note))
+	// --- create tmp file with note's text ---
+	if (!write_tmp_file(tmp_path, note))
 	{
 		std::cout << "Unable to create tmp file" << std::endl;
 		return false;
@@ -31,7 +35,7 @@ bool launch_editor(std::wstring path, note::Note &note) {
 
 	// --- create the child process ---
 	PROCESS_INFORMATION piProcInfo;
-	create_child_process(piProcInfo, path);
+	create_child_process(piProcInfo, tmp_path);
 
 	// --- loop until process finishes ---
 	DWORD exit_code;
@@ -43,14 +47,14 @@ bool launch_editor(std::wstring path, note::Note &note) {
 	// then we can close handles and resume parent execution
 	CloseHandle(piProcInfo.hProcess);
 	CloseHandle(piProcInfo.hThread);
-	
-	// TODO:
-	// The remaining open handles are cleaned up when this process terminates. 
-	// To avoid resource leaks in a larger application, close handles explicitly. 
 
-	// TODO: re-read into note
+	// re-read into note
+	bool success = read_tmp_file(tmp_path, note);
 
-	return true;
+	// delete tmp
+	_wremove(&tmp_path[0]);
+
+	return success;
 }
 
 void create_child_process(PROCESS_INFORMATION &piProcInfo, std::wstring path)
@@ -84,14 +88,29 @@ void create_child_process(PROCESS_INFORMATION &piProcInfo, std::wstring path)
 		error_exit(TEXT("CreateProcess"));
 }
 
-bool create_tmp_file(std::wstring path, note::Note n)
+bool write_tmp_file(std::wstring path, note::Note &note)
 {
 	// create / overwrite a tmp file
 	std::ofstream outf(path);
 	if (!outf)
 		return false;
-	outf << n.get_text();
+	outf << note.get_text();
 	outf.close();
+	return true;
+}
+
+bool read_tmp_file(std::wstring path, note::Note &note)
+{
+	std::ifstream inf(path);
+	if (!inf)
+		return false;
+	std::string buffer;
+	std::string tmp;
+	while (std::getline(inf, tmp))
+	{
+		buffer += tmp+ "\n";
+	}
+	note.set_text(buffer);
 	return true;
 }
 
