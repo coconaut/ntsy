@@ -11,3 +11,4 @@ void remove_newlines(std::string &str);
 void trim_char(std::string &str);
 void to_all_upper(std::string &str);
 std::string format_time(const time_t *time);
+void replace_char(std::string &str, char old, char replacer);

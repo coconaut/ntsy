@@ -51,6 +51,14 @@ bool launch_editor(note::Note &note) {
 	// re-read into note
 	bool success = read_tmp_file(tmp_path, note);
 
+	// update modified
+	if (success)
+	{
+		time_t t;
+		time(&t);
+		note.set_date_modified(t);
+	}
+
 	// delete tmp
 	_wremove(&tmp_path[0]);
 
@@ -108,8 +116,9 @@ bool read_tmp_file(std::wstring path, note::Note &note)
 	std::string tmp;
 	while (std::getline(inf, tmp))
 	{
-		buffer += tmp+ "\n";
+		buffer += tmp + "\n";
 	}
+
 	note.set_text(buffer);
 	return true;
 }

@@ -16,11 +16,14 @@ namespace note {
 	{
 		std::string dc = format_time(&m_date_created);
 		std::string dm = format_time(&m_date_modified);
-		std::string sub_str;
-		if (m_text.size() > MAINCOLSIZE)
-			sub_str = m_text.substr(0, MAINCOLSIZE - 5) + "...";
-		else
-			sub_str = m_text;
+		std::string sub_str = m_text;
+		
+		// for printing purposes, replace newlines with spaces...
+		replace_char(sub_str, '\n', ' ');
+
+		if (sub_str.size() > MAINCOLSIZE)
+			sub_str = sub_str.substr(0, MAINCOLSIZE - 5) + "...";
+		
 		
 		std::cout << std::left
 			<< std::setw(5) << m_tmpId
@@ -83,6 +86,7 @@ namespace note {
 	 * Deserialize the note.
 	 */
 	std::istream& operator>> (std::istream &in, Note &n) {
+		// TODO:!!! this loses new lines!!! need to check count, get
 		int len = 0;
 		char comma;
 		in >> n.m_date_created
@@ -95,7 +99,11 @@ namespace note {
 			std::vector<char> tmp_txt(len);
 			// leave room for the null terminator, or buffer will be too small
 			char *buf = new char[len + 1];
-			in.get(buf, len + 1);
+			// switching to read and manually adding null terminator
+			// ifstream::get was losing newlines
+			in.read(buf, len);
+			buf[len] = '\0'; 
+			//in.get(buf, len + 1);
 			n.m_text = std::string(buf);
 			delete buf;
 		}
@@ -188,7 +196,6 @@ namespace note {
 			notes[noteId - 1].print_full_note();
 		
 	}
-
 
 	/**
 	 * Just a helper to make sure we're in the vector bounds

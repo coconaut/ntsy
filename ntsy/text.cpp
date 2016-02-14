@@ -17,12 +17,21 @@ void remove_whitespace(std::string &str)
 	remove_char(str, ' ');
 }
 
+void replace_char(std::string &str, char old, char replacer)
+{
+	std::replace(str.begin(), str.end(), old, replacer);
+}
+
 void remove_newlines(std::string &str)
 {
 	remove_char(str, '\n');
 }
 
 void trim_char(std::string &str) {
+	// TODO:
+}
+
+void trim_newlines(std::string &str) {
 	// TODO:
 }
 
