@@ -17,7 +17,7 @@ ntsy rm <abbr.>            - Removes a collection.
 ntsy jot <abbr.> <text>    - Adds a quick note to a collection.
 ntsy open <abbr.>		   - Opens a collection in interactive mode.
 	// sub-commands
-	add <#>		      - Adds a new note.
+	add 		      - Adds a new note.
 	read <#>		  - Reads full note text.
 	edit <#>		  - Opens note for editing.
 	rm <#>			  - Deletes a note.

@@ -252,7 +252,7 @@ namespace cmd {
 			print_instructions("Enter a sub-command and note #. Enter 'help' for help. Enter 'exit' to quit.");
 			std::cin >> sub_cmd;
 
-			// TODO: convert to smarted map w/function pointers, like cmd table?
+			// --- sub commands ---
 			if (sub_cmd == "read")
 				sub_cmd_read(notes);
 			else if (sub_cmd == "help")
@@ -262,7 +262,7 @@ namespace cmd {
 			else if (sub_cmd == "rm")
 				sub_cmd_rm(note_path, notes);
 			else if (sub_cmd == "add")
-				sub_cmd_add();
+				sub_cmd_add(note_path, notes);
 			else if (sub_cmd == "exit")
 				break;
 			else {
@@ -309,10 +309,10 @@ namespace cmd {
 			success = launch_editor(notes[noteId - 1]);
 		}
 
-		// save and display
+		// save
 		if (success) {
 			note::save_all_notes(note_path, notes);
-			std::cout << "Note updated!!! (^^)" << std::endl;
+			std::cout << "Note saved!!! (^^)" << std::endl;
 		}
 
 		wait_for_continue(5);
@@ -332,11 +332,22 @@ namespace cmd {
 		wait_for_continue(5);
 	}
 
-	void sub_cmd_add()
+	void sub_cmd_add(std::string note_path, std::vector<note::Note> &notes)
 	{
-		// TODO: need to launch external editor
-		// TODO: add a note, save, save collection modified date, redisplay
-		print_instructions("todo!!!");
+		// create new note
+		note::Note n;
+
+		// launch editor - make sure we actually added a note before saving!!!
+		if (launch_editor(n) && !n.get_text().empty()) {
+			// save 
+			n.set_tmpId(notes.size() + 1);
+			notes.push_back(n);
+			note::save_all_notes(note_path, notes);
+			std::cout << "Note added!!! (^w^)" << std::endl;
+		}
+		else
+			std::cout << "No note added!!! (^.^)" << std::endl;
+		
 		wait_for_continue(5);
 	}
 

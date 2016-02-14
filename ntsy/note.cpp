@@ -86,7 +86,6 @@ namespace note {
 	 * Deserialize the note.
 	 */
 	std::istream& operator>> (std::istream &in, Note &n) {
-		// TODO:!!! this loses new lines!!! need to check count, get
 		int len = 0;
 		char comma;
 		in >> n.m_date_created
@@ -96,14 +95,13 @@ namespace note {
 			>> len
 			>> comma;
 		if (in && len) {
-			std::vector<char> tmp_txt(len);
 			// leave room for the null terminator, or buffer will be too small
 			char *buf = new char[len + 1];
+
 			// switching to read and manually adding null terminator
-			// ifstream::get was losing newlines
+			// ifstream::get loses newlines
 			in.read(buf, len);
 			buf[len] = '\0'; 
-			//in.get(buf, len + 1);
 			n.m_text = std::string(buf);
 			delete buf;
 		}
