@@ -12,9 +12,6 @@
 
 namespace cmd {
 
-	// --- constants ----------------
-	const char *NTSY_EXT = ".ntsy";
-
 	/**
 	 * NtsyCommand constructor.
 	 */
@@ -107,21 +104,29 @@ namespace cmd {
 		if (args.size() < 3)
 			return false;
 
-		remove_newlines(args[1]);
-		remove_whitespace(args[2]);
+		txt::remove_newlines(args[1]);
+		txt::trim(args[1]);
+
+		txt::remove_whitespace(args[2]);
+		txt::trim(args[2]);
 
 		if (args[1].empty() || args[1].compare("") == 0) {
 			std::cout << "Oh no!!! Name cannot be empty :[" << std::endl;
 			return false;
 		}
 
-		if (args[1].length() > col::MAXLENGTH) {
-			std::cout << "Oh no!!! Name must be less than " << std::to_string(col::MAXLENGTH) << " characters :[" << std::endl;
+		if (args[1].length() > txt::MAINCOLSIZE) {
+			std::cout << "Oh no!!! Name must be less than " << std::to_string(txt::MAINCOLSIZE) << " characters :[" << std::endl;
 			return false;
 		}
 
-		if (args[2].empty() || args[2].length() != 3) {
-			std::cout << "Oh no!!! Abbreviation must be exactly 3 characters. :[" << std::endl;
+		if (!txt::is_alphanumeric(args[2])) {
+			std::cout << "Oh no!!! Abbreviation must be alphanumeric!!!" << std::endl;
+			return false;
+		}
+
+		if (args[2].empty() || args[2].length() > 3) {
+			std::cout << "Oh no!!! Abbreviation must be 3 characters. :[" << std::endl;
 			return false;
 		}
 
@@ -167,7 +172,7 @@ namespace cmd {
 		if (args.size() > 1) {
 			
 			// get notes
-			std::string note_path = get_note_file_name(args[1]);
+			std::string note_path = txt::get_ntsy_file_name(args[1]);
 			auto notes = note::get_all_notes(note_path);
 
 			// display if any notes, error msg otherwise
@@ -198,7 +203,7 @@ namespace cmd {
 		auto cols = col::get_all_collections(path);
 		if (!handle_bad_collection(cols, args[1])) {
 			// add n to file (using rel for now...)
-			std::string note_file_path = get_note_file_name(args[1]);
+			std::string note_file_path = txt::get_ntsy_file_name(args[1]);
 			if (note::add_note(args[2], note_file_path))
 			{
 				// update date modified
@@ -232,7 +237,7 @@ namespace cmd {
 		auto cols = col::get_all_collections(path);
 		if (!handle_bad_collection(cols, args[1]))
 		{
-			std::string note_path = get_note_file_name(args[1]);
+			std::string note_path = txt::get_ntsy_file_name(args[1]);
 			auto notes = note::get_all_notes(note_path);
 			loop_interactive(notes, cols[args[1]].get_name(), note_path);
 		}
@@ -318,16 +323,24 @@ namespace cmd {
 		wait_for_continue(5);
 	}
 
+	void recount_notes(std::vector<note::Note> &notes)
+	{
+		for (size_t i = 0; i < notes.size(); i++) {
+			notes[i].set_tmpId(i + 1);
+		}
+	}
+
 	void sub_cmd_rm(std::string path, std::vector<note::Note> &notes)
 	{
 		std::string id;
 		std::cin >> id;
 		int noteId = note::parseNoteId(id);
-		if (note::remove_note(path, notes, noteId - 1))
+		if (note::remove_note(path, notes, noteId))
 		{
 			// note: don't update collection -> really uneccesarry overhead just for a date
 			// that date will only refer to editing the collection meta info itself...
 			std::cout << "Note removed!!!" << std::endl;
+			recount_notes(notes);
 		}
 		wait_for_continue(5);
 	}
@@ -399,14 +412,7 @@ namespace cmd {
 		return (cmds.find(cmd_name) != cmds.end());
 	}
 
-	/**
-	 * Forms a ntsy file name from abbr.
-	 */
-	std::string get_note_file_name(std::string &abbr)
-	{
-		return abbr + NTSY_EXT;
-	}
-
+	
 
 	/**
 	 * Deals with error message when we find no notes.

@@ -14,22 +14,22 @@ namespace note {
 
 	void Note::pretty_print() const
 	{
-		std::string dc = format_time(&m_date_created);
-		std::string dm = format_time(&m_date_modified);
+		std::string dc = txt::format_time(&m_date_created);
+		std::string dm = txt::format_time(&m_date_modified);
 		std::string sub_str = m_text;
 		
 		// for printing purposes, replace newlines with spaces...
-		replace_char(sub_str, '\n', ' ');
+		txt::replace_char(sub_str, '\n', ' ');
 
-		if (sub_str.size() > MAINCOLSIZE)
-			sub_str = sub_str.substr(0, MAINCOLSIZE - 5) + "...";
+		if (sub_str.size() > txt::MAINCOLSIZE)
+			sub_str = sub_str.substr(0, txt::MAINCOLSIZE - 5) + "...";
 		
 		
 		std::cout << std::left
 			<< std::setw(5) << m_tmpId
-			<< std::setw(MAINCOLSIZE) << sub_str
-			<< std::setw(DATECOLSIZE) << "[" + dm + "]"
-			<< std::setw(DATECOLSIZE) << "[" + dc + "]"
+			<< std::setw(txt::MAINCOLSIZE) << sub_str
+			<< std::setw(txt::DATECOLSIZE) << "[" + dm + "]"
+			<< std::setw(txt::DATECOLSIZE) << "[" + dc + "]"
 			<< std::endl
 			<< std::endl;
 	}
@@ -53,14 +53,14 @@ namespace note {
 		change_console_color(11, &csbi);
 		std::cout << std::left
 			<< std::setw(5) << "#"
-			<< std::setw(MAINCOLSIZE) << "Note"
-			<< std::setw(DATECOLSIZE) << "Last Modified"
-			<< std::setw(DATECOLSIZE) << "Date Created"
+			<< std::setw(txt::MAINCOLSIZE) << "Note"
+			<< std::setw(txt::DATECOLSIZE) << "Last Modified"
+			<< std::setw(txt::DATECOLSIZE) << "Date Created"
 			<< std::endl
 			<< std::setw(5) << "---"
-			<< std::setw(MAINCOLSIZE) << "---"
-			<< std::setw(DATECOLSIZE) << "---"
-			<< std::setw(DATECOLSIZE) << "---"
+			<< std::setw(txt::MAINCOLSIZE) << "---"
+			<< std::setw(txt::DATECOLSIZE) << "---"
+			<< std::setw(txt::DATECOLSIZE) << "---"
 			<< std::endl;
 		reset_console_color(csbi);
 	}
@@ -189,7 +189,7 @@ namespace note {
 	 */
 	void read_note(std::vector<Note> &notes, int noteId)
 	{
-		
+		// remember: a noteId is not zero-indexed!!!
 		if (check_note_is_there(notes, noteId))
 			notes[noteId - 1].print_full_note();
 		
@@ -201,8 +201,10 @@ namespace note {
 	 */
 	bool check_note_is_there(std::vector<Note> &notes, int noteId)
 	{
-		// remember, a noteId is not 0 indexed...
-		if (noteId <= 0 || noteId > notes.size())
+		// Id is not zero indexed, know this!
+		// Also, the size check only works so long as we recalc after removes...
+		// (Don't need to worry about adds, as they are appended!)
+		if (noteId < 1 || noteId > notes.size())
 		{
 			std::cout << "That # isn't here!!! (^_&)" << std::endl;
 			return false;
@@ -215,14 +217,24 @@ namespace note {
 	 * Checks if string is a valid int.
 	 * If it is, returns the int.
 	 * Otherwise returns 0.
-	 * This doesn't check null / empty strings.
 	 */
 	int parseNoteId(std::string id)
 	{
-		// TODO: this errors on non-numbers...
-		size_t nonIntChar = 0;
-		int noteId = 0;
-		noteId = std::stoi(id, &nonIntChar);
+		// check we have a num
+		if (id.empty() || !isdigit(id[0]))
+			return 0;
+
+		// parse it
+		size_t *idx_non_num = new size_t();
+		int noteId = std::stoi(id, idx_non_num);
+
+		// make sure was valid (idx should be 0 (or have reached end and thus == 0))
+		if (id.size() > 1 && *idx_non_num != 0) {
+			noteId = 0;
+		}
+			
+		delete idx_non_num;
+
 		return noteId;
 	}
 
@@ -251,17 +263,14 @@ namespace note {
 	/**
 	 * Removes a note from a collection.
 	 */
-	bool remove_note(std::string path, std::vector<Note> &notes, size_t index)
+	bool remove_note(std::string path, std::vector<Note> &notes, int noteId)
 	{
-		if (index > 0 && index <= notes.size())
+		if (check_note_is_there(notes, noteId))
 		{
-			notes.erase(notes.begin() + index);
+			notes.erase(notes.begin() + noteId - 1);
 			return save_all_notes(path, notes);
 		}
-		else
-		{
-			std::cout << "That # isn't here!!! (^_&)" << std::endl;
+		else	
 			return false;
-		}
 	}
 }

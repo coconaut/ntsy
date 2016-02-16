@@ -17,16 +17,6 @@ namespace col {
 
 	Collection::Collection(std::string name, std::string abbr)
 	{
-		assert(("Collection must have name!", !name.empty() && name.compare("") != 0));
-		assert(("Collection must have abbreviation!", !abbr.empty() && abbr.compare("") != 0));
-		assert(("Name can't be more than " + std::to_string(MAXLENGTH) + " characters!", name.length() <= MAXLENGTH));
-		assert(("Abbreviation must be exactly 3 characters!", abbr.length() == 3));
-
-		// TODO: check for other bad chars?
-
-		// make abbr all uppercase
-		to_all_upper(abbr);
-		
 		// set defaults
 		m_name = name;
 		m_abbr = abbr;
@@ -39,15 +29,15 @@ namespace col {
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
 		change_console_color(11, &csbi);
 		std::cout << std::left
-			<< std::setw(ABBR_COLSIZE) << "Abbr."
-			<< std::setw(MAINCOLSIZE) << "Collection"
-			<< std::setw(DATECOLSIZE) << "Last Modified"
-			<< std::setw(DATECOLSIZE) << "Date Created"
+			<< std::setw(txt::ABBR_COLSIZE) << "Abbr."
+			<< std::setw(txt::MAINCOLSIZE) << "Collection"
+			<< std::setw(txt::DATECOLSIZE) << "Last Modified"
+			<< std::setw(txt::DATECOLSIZE) << "Date Created"
 			<< std::endl
-			<< std::setw(ABBR_COLSIZE) << "---"
-			<< std::setw(MAINCOLSIZE) << "---"
-			<< std::setw(DATECOLSIZE) << "---"
-			<< std::setw(DATECOLSIZE) << "---"
+			<< std::setw(txt::ABBR_COLSIZE) << "---"
+			<< std::setw(txt::MAINCOLSIZE) << "---"
+			<< std::setw(txt::DATECOLSIZE) << "---"
+			<< std::setw(txt::DATECOLSIZE) << "---"
 			<< std::endl;
 		reset_console_color(csbi);
 	}
@@ -59,15 +49,15 @@ namespace col {
 	void Collection::pretty_print() const
 	{
 		// format time strings
-		std::string dc = format_time(&m_date_created);
-		std::string dm = format_time(&m_date_modified);
+		std::string dc = txt::format_time(&m_date_created);
+		std::string dm = txt::format_time(&m_date_modified);
 
 		// write to out stream
 		std::cout << std::left 
-			<< std::setw(ABBR_COLSIZE) << m_abbr
-			<< std::setw(MAINCOLSIZE) << m_name
-			<< std::setw(DATECOLSIZE) << "[" + dm + "]"
-			<< std::setw(DATECOLSIZE) << "[" + dc + "]"
+			<< std::setw(txt::ABBR_COLSIZE) << m_abbr
+			<< std::setw(txt::MAINCOLSIZE) << m_name
+			<< std::setw(txt::DATECOLSIZE) << "[" + dm + "]"
+			<< std::setw(txt::DATECOLSIZE) << "[" + dc + "]"
 			<< std::endl;
 	}
 
@@ -93,14 +83,14 @@ namespace col {
 	 */
 	std::istream& operator>> (std::istream &in, Collection &c) {
 		char delim;
-		char buf[MAXLENGTH];
+		char buf[txt::MAINCOLSIZE];
 		in >> c.m_date_created;
 		in >> delim;
 		in >> c.m_date_modified;
 		in >> delim;
 		in >> c.m_abbr;
 		in.get();
-		in.getline(buf, MAXLENGTH);
+		in.getline(buf, txt::MAINCOLSIZE);
 		c.m_name = std::string(buf);
 		return in;
 	}
@@ -211,7 +201,12 @@ namespace col {
 	 */
 	bool remove_collection(col_map_t &cols, std::string path, std::string abbr)
 	{
-		return (cols.erase(abbr) > 0) && save_all_collections(path, cols);
+		bool success = (cols.erase(abbr) > 0) && save_all_collections(path, cols);
+		if (success) {
+			std::string note_path = txt::get_ntsy_file_name(abbr);
+			remove(&note_path[0]);
+		}
+		return success;
 	}
 
 

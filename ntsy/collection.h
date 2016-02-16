@@ -6,12 +6,8 @@
 #include <string>
 #include <vector>
 #include "recordable.h"
-#include "text.h"
 
 namespace col {
-
-	// --- constants ---
-	const int MAXLENGTH = MAINCOLSIZE - 1;
 
 	class Collection : public Recordable
 	{

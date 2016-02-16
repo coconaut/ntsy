@@ -6,7 +6,6 @@
 
 namespace cmd {
 
-
 	// TODO: accept config object, not just path...
 	typedef bool cmd_t(std::vector<std::string> args, std::string path);
 
@@ -56,7 +55,6 @@ namespace cmd {
 	bool handle_no_notes(std::vector<note::Note> &notes, std::string &abbr);
 	bool handle_bad_collection(col::col_map_t cols, std::string abbr);
 	cmd_map_t init_commands();
-	std::string get_note_file_name(std::string &abbr);
 	void clean_up_commands(cmd_map_t &cmds);
 	void loop_interactive(std::vector<note::Note> &notes, std::string col_name, std::string note_path);
 	void print_instructions(char *instructions);

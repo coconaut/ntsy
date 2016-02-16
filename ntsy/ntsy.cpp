@@ -14,6 +14,7 @@
 #include "editor.h"
 #include "note.h"
 #include "ntsy.h"
+#include "text.h"
 
 
 
@@ -31,7 +32,6 @@ int main(int argc, char *argv[]) {
 		// for debugging
 		setCrtFlags();
 
-		
 		// load config
 		
 
