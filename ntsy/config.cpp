@@ -4,7 +4,8 @@
 
 NtsyConfig::NtsyConfig() {
 	// TODO: read from root, load up
-	// for now, set some defaults
+	// for now, set some default	
+	// TODO: make a path combine func that deals with '/'
 	m_ntsy_root = "./";
 	m_editor = "vim";
 	m_console_color = 10;

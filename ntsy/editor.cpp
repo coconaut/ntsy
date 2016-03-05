@@ -6,6 +6,8 @@
 #include <windows.h>
 #include "editor.h"
 #include "note.h"
+#include "config.h"
+#include "text.h"
 
 /**
  * Launch an editor.
@@ -14,11 +16,13 @@
  * Try to launch it in editor.
  * On success, read the file back in to the note and save.
  */
-bool launch_editor(note::Note &note) {
+bool launch_editor(note::Note &note, NtsyConfig *config) {
 	// TODO: we should really pass in config and create
 	// this is the ntsy dir, not the current dir, especially
 	// for write permissions...
-	std::wstring tmp_path = L"__tmp.ntsy";
+
+	std::wstring root = txt::convert_to_wide(config->get_ntsy_root());
+	std::wstring tmp_path = root + L"__tmp.ntsy";
 
 	// --- security attributes ---
 	SECURITY_ATTRIBUTES saAttr;
@@ -35,7 +39,7 @@ bool launch_editor(note::Note &note) {
 
 	// --- create the child process ---
 	PROCESS_INFORMATION piProcInfo;
-	create_child_process(piProcInfo, tmp_path);
+	create_child_process(piProcInfo, tmp_path, config);
 
 	// --- loop until process finishes ---
 	DWORD exit_code;
@@ -65,10 +69,11 @@ bool launch_editor(note::Note &note) {
 	return success;
 }
 
-void create_child_process(PROCESS_INFORMATION &piProcInfo, std::wstring path)
+void create_child_process(PROCESS_INFORMATION &piProcInfo, std::wstring path, NtsyConfig *config)
 {
 	// prep process args
-	path = L"vim " + path; //TEXT("C:\\Users\\Alexander\\AppData\\Local\\atom\\app-1.5.0\\atom.exe");
+	std::wstring editor = txt::convert_to_wide(config->get_editor());
+	path = editor + L" " + path; //TEXT("C:\\Users\\Alexander\\AppData\\Local\\atom\\app-1.5.0\\atom.exe");
 
 	// zero up the process info block
 	ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));

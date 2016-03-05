@@ -1,5 +1,7 @@
 #pragma once
 #include <algorithm>
+#include <locale>
+#include <codecvt>
 
 namespace txt {
 
@@ -46,6 +48,17 @@ namespace txt {
 
 	inline bool is_alphanumeric(std::string &str) {
 		return std::find_if(str.begin(), str.end(), [](int c) {return !isalnum(c);}) == str.end();
+	}
+
+	inline std::wstring convert_to_wide(std::string str) {
+		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+		return converter.from_bytes(str);
+	}
+
+	inline std::string convert_to_narrow(std::wstring wstr)
+	{
+		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+		return converter.to_bytes(wstr);
 	}
 
 }

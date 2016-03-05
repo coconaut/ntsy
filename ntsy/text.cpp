@@ -36,6 +36,7 @@ namespace txt {
 	std::string get_ntsy_file_name(std::string &name)
 	{
 		return name + NTSY_EXT;
-	}
+	}	
+
 
 }

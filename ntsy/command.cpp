@@ -302,7 +302,7 @@ namespace cmd {
 		
 		// launch the editor
 		if (note::check_note_is_there(notes, noteId)){
-			success = launch_editor(notes[noteId - 1]);
+			success = launch_editor(notes[noteId - 1], config);
 		}
 
 		// save
@@ -342,7 +342,7 @@ namespace cmd {
 		note::Note n;
 
 		// launch editor - make sure we actually added a note before saving!!!
-		if (launch_editor(n) && !n.get_text().empty()) {
+		if (launch_editor(n, config) && !n.get_text().empty()) {
 			// save 
 			n.set_tmpId(notes.size() + 1);
 			notes.push_back(n);
