@@ -6,6 +6,3 @@ void init_config();
 
 // for debugging
 void setCrtFlags();
-
-
-

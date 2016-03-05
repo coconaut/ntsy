@@ -12,17 +12,6 @@
 
 namespace cmd {
 
-	/**
-	 * NtsyCommand constructor.
-	 */
-	NtsyCommand::NtsyCommand(std::string name, std::string desc, std::string usage, cmd_t *cmd)
-	{
-		m_name = name;
-		m_desc = desc;
-		m_usage = usage;
-		m_command = cmd;
-	}
-
 
 	/**
 	 * Prints command help / basic info.
@@ -54,16 +43,16 @@ namespace cmd {
 	/**
 	 * Intializes map of notesy commands.
 	 */
-	cmd_map_t init_commands()
+	cmd_map_t init_commands(NtsyConfig *config)
 	{
 		cmd_map_t cmds;
 		if (cmds.empty())
 		{
-			cmds["ls"] = new NtsyCommand("ls", "Lists collections. If collection is specified, lists notes.", "[<abbr.>]", cmd_list);
-			cmds["col"] = new NtsyCommand("col", "Adds a new collection.","<name> <abbr.>", cmd_col);
-			cmds["rm"] = new NtsyCommand("rm", "Removes a collection.", "<abbr.>", cmd_rm);
-			cmds["jot"] = new NtsyCommand("jot", "Adds a note to a collection", "<abbr.> <text>", cmd_jot);
-			cmds["open"] = new NtsyCommand("open", "Opens a collection in interactive mode.", "<abbr.>", cmd_open);
+			cmds["ls"] = new NtsyCommand("ls", "Lists collections. If collection is specified, lists notes.", "[<abbr.>]", cmd_list, config);
+			cmds["col"] = new NtsyCommand("col", "Adds a new collection.","<name> <abbr.>", cmd_col, config);
+			cmds["rm"] = new NtsyCommand("rm", "Removes a collection.", "<abbr.>", cmd_rm, config);
+			cmds["jot"] = new NtsyCommand("jot", "Adds a note to a collection", "<abbr.> <text>", cmd_jot, config);
+			cmds["open"] = new NtsyCommand("open", "Opens a collection in interactive mode.", "<abbr.>", cmd_open, config);
 		}
 
 		return cmds;
@@ -95,7 +84,7 @@ namespace cmd {
 	* Returns bool of whether this command was executed,
 	* regardless of success.
 	*/
-	bool cmd_col(std::vector<std::string> args, std::string path)
+	bool cmd_col(std::vector<std::string> args, NtsyConfig *config)
 	{
 		// TODO: check if dir exists, if not error (tell to call init/ config)
 		// TODO: check if index file exists, if not, error (tell to call init / config)
@@ -131,6 +120,7 @@ namespace cmd {
 		}
 
 		// retrieve collections, add, and show
+		auto path = config->get_index_path();
 		auto cols = col::get_all_collections(path);
 		if (col::add_collection(cols, path, args[1], args[2]))
 			col::list_all_collections(cols);
@@ -147,11 +137,12 @@ namespace cmd {
 	 * Returns bool of whether this command was executed,
 	 * regardless of success.
 	 */
-	bool cmd_rm(std::vector<std::string> args, std::string path) {
+	bool cmd_rm(std::vector<std::string> args, NtsyConfig *config) {
 		if (args.size() < 2) {
 			return false;
 		}
 		
+		std::string path = config->get_index_path();
 		auto cols = col::get_all_collections(path);
 		if (col::remove_collection(cols, path, args[1]))
 			col::list_all_collections(cols);
@@ -166,7 +157,7 @@ namespace cmd {
 	 * Lists all collections.
 	 * If abbr. is passed, lists notes under that collection instead.
 	 */
-	bool cmd_list(std::vector<std::string> args, std::string path)
+	bool cmd_list(std::vector<std::string> args, NtsyConfig *config)
 	{
 		// check for collection abbr.
 		if (args.size() > 1) {
@@ -180,7 +171,7 @@ namespace cmd {
 				note::list_all_notes(note_path);
 		}
 		else 
-			col::list_all_collections(path);
+			col::list_all_collections(config->get_index_path());
 		
 		return true;
 	}
@@ -195,12 +186,12 @@ namespace cmd {
 	 * Get file path (for now, just abbr (MUST CLEAN), but later
 	 * may serialize a guid with the collection obj.
 	 */
-	bool cmd_jot(std::vector<std::string> args, std::string path)
+	bool cmd_jot(std::vector<std::string> args, NtsyConfig *config)
 	{
 		if (args.size() < 3)
 			return false;
 
-		auto cols = col::get_all_collections(path);
+		auto cols = col::get_all_collections(config->get_index_path());
 		if (!handle_bad_collection(cols, args[1])) {
 			// add n to file (using rel for now...)
 			std::string note_file_path = txt::get_ntsy_file_name(args[1]);
@@ -212,7 +203,7 @@ namespace cmd {
 				cols[args[1]].set_date_modified(t);
 
 				// save collections
-				col::save_all_collections(path, cols);
+				col::save_all_collections(config->get_index_path(), cols);
 				std::cout << "Note added!!!" << std::endl;
 			}
 			else
@@ -227,26 +218,26 @@ namespace cmd {
 	 * Expects args[1] to be collection abbreviation.
 	 * Starts interactive note loop.
 	 */
-	bool cmd_open(std::vector<std::string> args, std::string path)
+	bool cmd_open(std::vector<std::string> args, NtsyConfig *config)
 	{
 		// check args
 		if (args.size() < 2)
 			return false;
 
 		// get collection, if valid
-		auto cols = col::get_all_collections(path);
+		auto cols = col::get_all_collections(config->get_index_path());
 		if (!handle_bad_collection(cols, args[1]))
 		{
 			std::string note_path = txt::get_ntsy_file_name(args[1]);
 			auto notes = note::get_all_notes(note_path);
-			loop_interactive(notes, cols[args[1]].get_name(), note_path);
+			loop_interactive(notes, cols[args[1]].get_name(), note_path, config);
 		}
 			
 		return true;
 	}
 
 
-	void loop_interactive(std::vector<note::Note> &notes, std::string col_name, std::string note_path)
+	void loop_interactive(std::vector<note::Note> &notes, std::string col_name, std::string note_path, NtsyConfig *config)
 	{
 		std::string sub_cmd = "";
 		
@@ -254,31 +245,31 @@ namespace cmd {
 			std::cout << col_name << std::endl << "---" << std::endl << std::endl;
 			note::list_all_notes(notes);
 			skip_some_lines(5);
-			print_instructions("Enter a sub-command and note #. Enter 'help' for help. Enter 'exit' to quit.");
+			print_instructions("Enter a sub-command and note #. Enter 'help' for help. Enter 'exit' to quit.", config);
 			std::cin >> sub_cmd;
 
 			// --- sub commands ---
 			if (sub_cmd == "read")
-				sub_cmd_read(notes);
+				sub_cmd_read(notes, config);
 			else if (sub_cmd == "help")
-				sub_cmd_help();
+				sub_cmd_help(config);
 			else if (sub_cmd == "edit")
-				sub_cmd_edit(note_path, notes);
+				sub_cmd_edit(note_path, notes, config);
 			else if (sub_cmd == "rm")
-				sub_cmd_rm(note_path, notes);
+				sub_cmd_rm(note_path, notes, config);
 			else if (sub_cmd == "add")
-				sub_cmd_add(note_path, notes);
+				sub_cmd_add(note_path, notes, config);
 			else if (sub_cmd == "exit")
 				break;
 			else {
-				print_instructions("Sub-command not found!!! :[[[");
-				wait_for_continue(5);
+				print_instructions("Sub-command not found!!! :[[[", config);
+				wait_for_continue(5, config);
 			}
 		}
 	}
 
 
-	void sub_cmd_read(std::vector<note::Note> &notes)
+	void sub_cmd_read(std::vector<note::Note> &notes, NtsyConfig *config)
 	{
 		std::string id;
 		std::cin >> id;
@@ -286,21 +277,21 @@ namespace cmd {
 		skip_some_lines(5);
 		note::read_note(notes, noteId);
 		std::cout << std::endl;
-		wait_for_continue(5);
+		wait_for_continue(5, config);
 	}
 
-	void sub_cmd_help()
+	void sub_cmd_help(NtsyConfig *config)
 	{
 		skip_some_lines(5);
 		print_instructions("Available commands:\n\n"
 			"add     - usage: add         - Adds a new note.\n"
 			"read    - usage: read <#>    - Reads full note text.\n"
 			"edit    - usage: edit <#>    - Opens note for editing.\n"
-			"rm      - usage: rm <#>      - Deletes a note");
-		wait_for_continue(5);
+			"rm      - usage: rm <#>      - Deletes a note", config);
+		wait_for_continue(5, config);
 	}
 
-	void sub_cmd_edit(std::string note_path, std::vector<note::Note> &notes)
+	void sub_cmd_edit(std::string note_path, std::vector<note::Note> &notes, NtsyConfig *config)
 	{
 		bool success = false;
 		
@@ -320,7 +311,7 @@ namespace cmd {
 			std::cout << "Note saved!!! (^^)" << std::endl;
 		}
 
-		wait_for_continue(5);
+		wait_for_continue(5, config);
 	}
 
 	void recount_notes(std::vector<note::Note> &notes)
@@ -330,22 +321,22 @@ namespace cmd {
 		}
 	}
 
-	void sub_cmd_rm(std::string path, std::vector<note::Note> &notes)
+	void sub_cmd_rm(std::string note_path, std::vector<note::Note> &notes, NtsyConfig *config)
 	{
 		std::string id;
 		std::cin >> id;
 		int noteId = note::parseNoteId(id);
-		if (note::remove_note(path, notes, noteId))
+		if (note::remove_note(note_path, notes, noteId))
 		{
 			// note: don't update collection -> really uneccesarry overhead just for a date
 			// that date will only refer to editing the collection meta info itself...
 			std::cout << "Note removed!!!" << std::endl;
 			recount_notes(notes);
 		}
-		wait_for_continue(5);
+		wait_for_continue(5, config);
 	}
 
-	void sub_cmd_add(std::string note_path, std::vector<note::Note> &notes)
+	void sub_cmd_add(std::string note_path, std::vector<note::Note> &notes, NtsyConfig *config)
 	{
 		// create new note
 		note::Note n;
@@ -361,20 +352,20 @@ namespace cmd {
 		else
 			std::cout << "No note added!!! (^.^)" << std::endl;
 		
-		wait_for_continue(5);
+		wait_for_continue(5, config);
 	}
 
-	void wait_for_continue(size_t num_lines)
+	void wait_for_continue(size_t num_lines, NtsyConfig *config)
 	{
-		print_instructions("Press any key to continue...");
+		print_instructions("Press any key to continue...", config);
 		while (!_kbhit()) {}
 		skip_some_lines(num_lines);
 	}
 
-	void print_instructions(char *instructions)
+	void print_instructions(char *instructions, NtsyConfig *config)
 	{
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
-		change_console_color(11, &csbi);
+		change_console_color(config->get_heading_color(), &csbi);
 		std::cout << instructions << std::endl << std::endl;
 		reset_console_color(csbi);
 	}

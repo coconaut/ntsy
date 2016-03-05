@@ -5,9 +5,16 @@
 NtsyConfig::NtsyConfig() {
 	// TODO: read from root, load up
 	// for now, set some defaults
-	m_console_color = 11;
+	m_ntsy_root = "./";
+	m_editor = "vim";
+	m_console_color = 10;
+	m_heading_color = 11;
 }
 
+std::string NtsyConfig::get_index_path() {
+	// TODO: make this safer? path wise, /s I mean
+	return m_ntsy_root + "index.ntsy";
+}
 
 
 // TODO: (it'd be nice to save as YAML or something pleasant / editable)

@@ -33,25 +33,20 @@ int main(int argc, char *argv[]) {
 		setCrtFlags();
 
 		// load config
-		
+		NtsyConfig config;
 
 		// --- console color changing -----------------------
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
-		change_console_color(10, &csbi);
+		change_console_color(config.get_console_color(), &csbi);
 		std::cout << std::endl;
 
 		try
 		{			
-			
-			// collections / topics index (will pull from config)
-			std::string path = "./index.ntsy";
-
 			// load commands
-			cmd::cmd_map_t cmds = cmd::init_commands();
+			cmd::cmd_map_t cmds = cmd::init_commands(&config);
 
 			// lookup and run command
 			if (argc > 1 && cmd::has_command(cmds, argv[1])) {
-				// TODO: pass config object as well...
 				std::vector<std::string> sargs;
 				bool isHelp = false;
 				for (int i = 1; i < argc; i++) {
@@ -62,7 +57,7 @@ int main(int argc, char *argv[]) {
 					}
 					sargs.push_back(s);
 				}
-				if (isHelp || !cmds[argv[1]]->run_command(sargs, path)) {
+				if (isHelp || !cmds[argv[1]]->run_command(sargs)) {
 					cmds[argv[1]]->pretty_print_usage();
 				}
 			}
