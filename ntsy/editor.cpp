@@ -73,7 +73,7 @@ void create_child_process(PROCESS_INFORMATION &piProcInfo, std::wstring path, Nt
 {
 	// prep process args
 	std::wstring editor = txt::convert_to_wide(config->get_editor());
-	path = editor + L" " + path; //TEXT("C:\\Users\\Alexander\\AppData\\Local\\atom\\app-1.5.0\\atom.exe");
+	path = editor + L" " + path;
 
 	// zero up the process info block
 	ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
@@ -134,6 +134,7 @@ void error_exit(PTSTR lpszFunction)
 // Format a readable error message, print, and exit.
 {
 	LPVOID lpMsgBuf;
+	LPVOID lpDisplayBuf;
 	DWORD dw = GetLastError();
 
 	FormatMessage(
@@ -146,8 +147,16 @@ void error_exit(PTSTR lpszFunction)
 		(LPTSTR)&lpMsgBuf,
 		0, NULL);
 
-	std::cout << lpMsgBuf << std::endl;
+	lpDisplayBuf = (LPVOID)LocalAlloc(LMEM_ZEROINIT,(lstrlen((LPCTSTR)lpMsgBuf) + lstrlen((LPCTSTR)lpszFunction) + 40)*sizeof(TCHAR));
+
+	StringCchPrintf((LPTSTR)lpDisplayBuf,
+		LocalSize(lpDisplayBuf) / sizeof(TCHAR),
+		TEXT("%s failed with error %d: %s"),
+		lpszFunction, dw, lpMsgBuf);
+
+	std::wcout << (LPCTSTR)lpDisplayBuf << std::endl;
 	
 	LocalFree(lpMsgBuf);
+	LocalFree(lpDisplayBuf);
 	ExitProcess(1);
 }

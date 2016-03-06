@@ -13,13 +13,13 @@ Recordable::Recordable() {
 
 
 /**
-* Appends a single recordable to notesy file.
+* Appends a single recordable to file.
 */
 bool Recordable::save(std::string path) const
 {
 	std::ofstream outf(path, std::ios::app);
 	if (!outf) {
-		std::cerr << "Could not open notesy file!!!" << std::endl;
+		std::cerr << "Could not open file!!!" << std::endl;
 		return false;
 	}
 	serialize(outf);
@@ -35,7 +35,7 @@ bool Recordable::save(std::string path) const
 bool Recordable::save(std::ofstream &outf) const
 {
 	if (!outf) {
-		std::cerr << "Could not write to notesy file!!!" << std::endl;
+		std::cerr << "Could not write to file!!!" << std::endl;
 		return false;
 	}
 	serialize(outf);

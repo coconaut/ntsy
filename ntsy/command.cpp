@@ -163,7 +163,7 @@ namespace cmd {
 		if (args.size() > 1) {
 			
 			// get notes
-			std::string note_path = txt::get_ntsy_file_name(args[1]);
+			std::string note_path = get_note_path(args[1], config);
 			auto notes = note::get_all_notes(note_path);
 
 			// display if any notes, error msg otherwise
@@ -194,7 +194,7 @@ namespace cmd {
 		auto cols = col::get_all_collections(config->get_index_path());
 		if (!handle_bad_collection(cols, args[1])) {
 			// add n to file (using rel for now...)
-			std::string note_file_path = txt::get_ntsy_file_name(args[1]);
+			std::string note_file_path = get_note_path(args[1], config);
 			if (note::add_note(args[2], note_file_path))
 			{
 				// update date modified
@@ -228,7 +228,7 @@ namespace cmd {
 		auto cols = col::get_all_collections(config->get_index_path());
 		if (!handle_bad_collection(cols, args[1]))
 		{
-			std::string note_path = txt::get_ntsy_file_name(args[1]);
+			std::string note_path = get_note_path(args[1], config);
 			auto notes = note::get_all_notes(note_path);
 			loop_interactive(notes, cols[args[1]].get_name(), note_path, config);
 		}
@@ -429,5 +429,9 @@ namespace cmd {
 			std::cout << "Oh no!!! Unable to find collection with abbreviation: " + abbr << "!!! :[" << std::endl;
 		}
 		return has_col;
+	}
+
+	std::string get_note_path(std::string &name, NtsyConfig *config){
+		return config->get_ntsy_root() + txt::get_ntsy_file_name(name);
 	}
 }

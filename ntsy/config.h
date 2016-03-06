@@ -8,7 +8,6 @@ class NtsyConfig
 	int m_console_color;
 	int m_heading_color;
 
-
 public:
 	// --- constructor ---
 	NtsyConfig();
@@ -24,7 +23,10 @@ public:
 	void set_heading_color(int color) { m_heading_color = color; }
 
 	// --- methods ---
+	bool save();
+	void load();
 	std::string get_index_path();
+	
 	
 	// --- i/o serialization overloads ---
 	friend std::ostream& operator<< (std::ostream &out, const NtsyConfig &c);

@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
 		setCrtFlags();
 
 		// load config
-		NtsyConfig config;
+		NtsyConfig config;		
 
 		// --- console color changing -----------------------
 		CONSOLE_SCREEN_BUFFER_INFO csbi;

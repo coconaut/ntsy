@@ -58,6 +58,7 @@ namespace cmd {
 	bool handle_no_notes(std::vector<note::Note> &notes, std::string &abbr);
 	bool handle_bad_collection(col::col_map_t cols, std::string abbr);
 	cmd_map_t init_commands(NtsyConfig *config);
+	std::string get_note_path(std::string &name, NtsyConfig *config);
 	void clean_up_commands(cmd_map_t &cmds);
 	void loop_interactive(std::vector<note::Note> &notes, std::string col_name, std::string note_path, NtsyConfig *config);
 	void print_instructions(char *instructions, NtsyConfig *config);
