@@ -236,6 +236,23 @@ namespace cmd {
 		return true;
 	}
 
+	/**
+	* Edit configuration.
+	*/
+	bool cmd_config(std::vector<std::string> args, NtsyConfig *config)
+	{
+		// TODO: config (take k, v as args)
+		if (args.size() < 3)
+			return false;
+		// build maps of keys and void pointer (setting the prop)
+		// move to config.cpp
+		// this is probably what the istream op should do, that way
+		// we can extend like real toml
+
+		// either edit the object and save, or directly edit file?
+
+	}
+
 
 	void loop_interactive(std::vector<note::Note> &notes, std::string col_name, std::string note_path, NtsyConfig *config)
 	{

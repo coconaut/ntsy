@@ -3,10 +3,11 @@
 #include <fstream>
 #include <map>
 #include <string>
+#include <vector>
 #include "config.h"
 
 
-const char *CONFIG_PATH = "./.ntsyconfig";
+const char *CONFIG_PATH = "./config.toml";
 
 NtsyConfig::NtsyConfig() {
 	m_is_loaded = this->load();
@@ -57,18 +58,51 @@ std::ostream& operator<< (std::ostream &out, const NtsyConfig &c) {
 	return out;
 };
 
+
+
 std::istream& operator>> (std::istream &in, NtsyConfig &c) {
 	// note: it'd be nice to make this real TOML, but for now,
 	// since we control all serialization, can go by prop order
-	std::string buf;
-	in >> buf
-		>> c.m_ntsy_root
-		>> buf
-		>> c.m_editor
-		>> buf
-		>> c.m_console_color
-		>> buf
-		>> c.m_heading_color;
+	auto mapper = create_config_keys_mapper(c);
+	std::string key;
+	std::string val;
+	while (in >> key)
+	{
+		if (has_key(key, mapper)) {
+			in >> val;
+			mapper[key](&val[0], &c);
+		}
+	}
+
 	return in;
 };
+
+std::map<std::string, config_setter*> create_config_keys_mapper(NtsyConfig &c) {
+	std::map<std::string, config_setter*> m;
+	m["[root]"] = set_root_path_c;
+	m["[editor]"] = set_editor_c;
+	m["[console_color]"] = set_console_color_c;
+	m["[heading_color]"] = set_heading_color_c;
+	return m;
+}
+
+// wrappers for easier mapping from void* funcs, all using char* as arg
+void set_heading_color_c(char* color, NtsyConfig *c) { 
+	c->set_heading_color(atoi(color)); 
+}
+void set_console_color_c(char* color, NtsyConfig *c) { 
+	c->set_console_color(atoi(color)); 
+}
+void set_editor_c(char* editor, NtsyConfig *c) { 
+	c->set_editor(std::string(editor)); 
+}
+void set_root_path_c(char *rp, NtsyConfig *c) { 
+	c->set_root_path(std::string(rp)); 
+}
+
+
+bool has_key(std::string &key, std::map<std::string, config_setter*> &mapper)
+{
+	return (mapper.find(key) != mapper.end());
+}
 

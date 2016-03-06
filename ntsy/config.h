@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <map>
 
 class NtsyConfig
 {
@@ -34,3 +35,14 @@ public:
 	friend std::ostream& operator<< (std::ostream &out, const NtsyConfig &c);
 	friend std::istream& operator>> (std::istream &in, NtsyConfig &c);
 };
+
+
+typedef void config_setter(char *val, NtsyConfig *c);
+
+// --- declarations --
+std::map<std::string, config_setter*> create_config_keys_mapper(NtsyConfig &c);
+bool has_key(std::string &key, std::map<std::string, config_setter*> &mapper);
+void set_heading_color_c(char* color, NtsyConfig *c);
+void set_console_color_c(char* color, NtsyConfig *c);
+void set_editor_c(char* editor, NtsyConfig *c);
+void set_root_path_c(char *rp, NtsyConfig *c);
