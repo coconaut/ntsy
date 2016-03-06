@@ -17,20 +17,22 @@
 #include "text.h"
 
 
-
+#ifdef _DEBUG
 // --- for debugging mem leaks ---
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
-
+#endif
 
 /**
  * Entry point: gets command and launches
  */
 int main(int argc, char *argv[]) {
 	{
-		// for debugging
+#ifdef _DEBUG
+		// for mem leak detection
 		setCrtFlags();
+#endif
 
 		// load config
 		NtsyConfig config;
@@ -43,7 +45,7 @@ int main(int argc, char *argv[]) {
 		std::cout << std::endl;
 
 		try
-		{			
+		{
 			// load commands
 			cmd::cmd_map_t cmds = cmd::init_commands(&config);
 
@@ -67,9 +69,9 @@ int main(int argc, char *argv[]) {
 				cmd::show_descriptions(cmds);
 			}
 
-		
-		// clean up commands
-		cmd::clean_up_commands(cmds);
+
+			// clean up commands
+			cmd::clean_up_commands(cmds);
 		}
 		catch (...)
 		{
@@ -82,8 +84,9 @@ int main(int argc, char *argv[]) {
 		reset_console_color(csbi);
 
 	}
+#ifdef _DEBUG
 	_CrtDumpMemoryLeaks();
-	// ---------------------
+#endif
 	return 0;
 }
 
@@ -119,7 +122,7 @@ void init_config() {
 
 }
 
-
+#ifdef _DEBUG
 /**
 * Sets necessary flags for debugging memory leaks.
 */
@@ -132,3 +135,4 @@ void setCrtFlags()
 	_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
 	_CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDOUT);
 }
+#endif
