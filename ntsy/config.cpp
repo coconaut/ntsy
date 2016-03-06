@@ -4,10 +4,27 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "windows.h"
 #include "config.h"
+#include "text.h"
 
 
-const char *CONFIG_PATH = "./config.toml";
+/**
+* Gets the directory of the runnig exe.
+* Appends config file name.
+* This way ntsy can be added to path and run from
+* anywhere while still finding it's config.
+*/
+std::string GetConfigFile() {
+	const char *CONFIG_FILE_NAME = "\\config.toml";
+	WCHAR buf[MAX_PATH];
+	GetModuleFileName(NULL, buf, sizeof(buf));
+	std::string full_exe_path = txt::convert_to_narrow(buf);
+	std::string::size_type pos = full_exe_path.find_last_of("\\/");
+	std::string dir = full_exe_path.substr(0, pos);
+	std::string name = dir + CONFIG_FILE_NAME;
+	return name;
+}
 
 NtsyConfig::NtsyConfig() {
 	m_is_loaded = this->load();
@@ -21,7 +38,7 @@ std::string NtsyConfig::get_index_path() {
 bool NtsyConfig::save() {
 	// config must always be with the exe, or somewhere certain.
 	// we can't load a path to read since we wouldn't know where to load from!
-	std::ofstream outf(CONFIG_PATH);
+	std::ofstream outf(GetConfigFile());
 	if (!outf) {
 		std::cout << "Unable to open file!!" << std::endl;
 		return false;
@@ -32,7 +49,7 @@ bool NtsyConfig::save() {
 }
 
 bool NtsyConfig::load() {
-	std::ifstream inf(CONFIG_PATH);
+	std::ifstream inf(GetConfigFile());
 	if (!inf) {
 		std::cout << "Unable to open config!!! (^.^)" 
 			<< std::endl 
