@@ -1,4 +1,4 @@
-# README
+# ntsy
 
 ## Description
 
@@ -21,4 +21,6 @@ ntsy open <abbr.>		   - Opens a collection in interactive mode.
 	read <#>		  - Reads full note text.
 	edit <#>		  - Opens note for editing.
 	rm <#>			  - Deletes a note.
+ntsy config <key> <value>  - Edits a configuration setting.
+
 ```
