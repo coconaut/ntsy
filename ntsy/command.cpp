@@ -53,12 +53,13 @@ namespace cmd {
 			cmds["rm"] = new NtsyCommand("rm", "Removes a collection.", "<abbr.>", cmd_rm, config);
 			cmds["jot"] = new NtsyCommand("jot", "Adds a note to a collection", "<abbr.> <text>", cmd_jot, config);
 			cmds["open"] = new NtsyCommand("open", "Opens a collection in interactive mode.", "<abbr.>", cmd_open, config);
+			cmds["config"] = new NtsyCommand("config", "Edits a configuration setting.", 
+				"<key ['root' | 'editor' | 'console_color' (int) | 'heading_color' (int)]> <value>", cmd_config, config);
 		}
 
 		return cmds;
 
-		// init (welcome message, brief help info, set up dir)
-		// config (change dir, maybe colors..., show dates, etc.)
+		// init (welcome message, brief help info, set up dir)		
 		// rename <abbr.> <new name>
 		// reabbr <abbr.> <new abbr.>
 		
@@ -237,20 +238,20 @@ namespace cmd {
 	}
 
 	/**
-	* Edit configuration.
+	* Edit configuration. Expects a key and value.
 	*/
 	bool cmd_config(std::vector<std::string> args, NtsyConfig *config)
 	{
-		// TODO: config (take k, v as args)
+		
 		if (args.size() < 3)
 			return false;
-		// build maps of keys and void pointer (setting the prop)
-		// move to config.cpp
-		// this is probably what the istream op should do, that way
-		// we can extend like real toml
 
-		// either edit the object and save, or directly edit file?
+		// TODO: validate args better
+		if (args[1].empty() || args[2].empty())
+			return false;
 
+		bool success = config->change_setting(args[1], &args[2][0]);
+		return true;
 	}
 
 

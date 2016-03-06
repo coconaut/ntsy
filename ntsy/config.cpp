@@ -23,7 +23,7 @@ bool NtsyConfig::save() {
 	// we can't load a path to read since we wouldn't know where to load from!
 	std::ofstream outf(CONFIG_PATH);
 	if (!outf) {
-		std::cout << "Unable to open config!!" << std::endl;
+		std::cout << "Unable to open file!!" << std::endl;
 		return false;
 	}
 	outf << *this;
@@ -45,6 +45,19 @@ bool NtsyConfig::load() {
 	return true;
 }
 
+bool NtsyConfig::change_setting(std::string key, char *val) {
+	auto mapper = create_config_keys_mapper(*this);
+	std::string map_key = "[" + key + "]";
+	if (has_key(map_key, mapper)) {
+		mapper[map_key](val, this);
+		return this->save();
+	}
+	else {
+		std::cout << "Unable to find config setting: " << key << std::endl;
+		return false;
+	}
+}
+
 std::ostream& operator<< (std::ostream &out, const NtsyConfig &c) {
 	using std::endl;
 	out << "[root]" << endl
@@ -57,7 +70,6 @@ std::ostream& operator<< (std::ostream &out, const NtsyConfig &c) {
 		<< c.m_heading_color;
 	return out;
 };
-
 
 
 std::istream& operator>> (std::istream &in, NtsyConfig &c) {
@@ -86,6 +98,10 @@ std::map<std::string, config_setter*> create_config_keys_mapper(NtsyConfig &c) {
 	return m;
 }
 
+bool has_key(std::string &key, std::map<std::string, config_setter*> &mapper) {
+	return (mapper.find(key) != mapper.end());
+}
+
 // wrappers for easier mapping from void* funcs, all using char* as arg
 void set_heading_color_c(char* color, NtsyConfig *c) { 
 	c->set_heading_color(atoi(color)); 
@@ -101,8 +117,4 @@ void set_root_path_c(char *rp, NtsyConfig *c) {
 }
 
 
-bool has_key(std::string &key, std::map<std::string, config_setter*> &mapper)
-{
-	return (mapper.find(key) != mapper.end());
-}
 

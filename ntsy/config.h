@@ -28,6 +28,7 @@ public:
 	// --- methods ---
 	bool save();
 	bool load();
+	bool change_setting(std::string key, char *val);
 	std::string get_index_path();
 	
 	

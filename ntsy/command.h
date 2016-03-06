@@ -44,7 +44,7 @@ namespace cmd {
 	bool cmd_list(std::vector<std::string> args, NtsyConfig *config);
 	bool cmd_open(std::vector<std::string> args, NtsyConfig *config);
 	bool cmd_rm(std::vector<std::string> args, NtsyConfig *config);
-	// TODO: config (take k, v as args)
+	bool cmd_config(std::vector<std::string> args, NtsyConfig *config);
 	// TODO: init
 
 	// --- sub-commands ---
