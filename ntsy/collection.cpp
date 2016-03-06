@@ -6,6 +6,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "config.h"
 #include "collection.h"
 #include "console.h"
 #include "text.h"
@@ -23,11 +24,11 @@ namespace col {
 	}
 
 	// prints a header for collection / collection list
-	void print_header()
+	void print_header(NtsyConfig *config)
 	{
 		// consider changiing (and resetting) console color? maybe wrap each part in function...
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
-		change_console_color(11, &csbi);
+		change_console_color(config->get_heading_color(), &csbi);
 		std::cout << std::left
 			<< std::setw(txt::ABBR_COLSIZE) << "Abbr."
 			<< std::setw(txt::MAINCOLSIZE) << "Collection"
@@ -159,9 +160,9 @@ namespace col {
 	/**
 	 * Lists all collections.
 	 */
-	void list_all_collections(col_map_t &cols)
+	void list_all_collections(col_map_t &cols, NtsyConfig *config)
 	{
-		print_header();
+		print_header(config);
 		// use the const ref so we don't copy
 		for (const auto &iter : cols) {
 			iter.second.pretty_print();
@@ -171,10 +172,10 @@ namespace col {
 	/**
 	 * Lists all collections.
 	 */
-	void list_all_collections(std::string path)
+	void list_all_collections(std::string path, NtsyConfig *config)
 	{
 		col_map_t cols = get_all_collections(path);
-		list_all_collections(cols);
+		list_all_collections(cols, config);
 	}
 
 	

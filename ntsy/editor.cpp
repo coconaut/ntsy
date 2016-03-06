@@ -17,10 +17,7 @@
  * On success, read the file back in to the note and save.
  */
 bool launch_editor(note::Note &note, NtsyConfig *config) {
-	// TODO: we should really pass in config and create
-	// this is the ntsy dir, not the current dir, especially
-	// for write permissions...
-
+	
 	std::wstring root = txt::convert_to_wide(config->get_ntsy_root());
 	std::wstring tmp_path = root + L"__tmp.ntsy";
 

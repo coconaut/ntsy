@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "config.h"
 #include "recordable.h"
 
 namespace col {
@@ -39,10 +40,10 @@ namespace col {
 	typedef std::map<std::string, Collection> col_map_t;
 
 	// --- declarations ---
-	void print_header();
+	void print_header(NtsyConfig *config);
 	col_map_t get_all_collections(std::string path);
-	void list_all_collections(col_map_t &cols);
-	void list_all_collections(std::string path);
+	void list_all_collections(col_map_t &cols, NtsyConfig *config);
+	void list_all_collections(std::string path, NtsyConfig *config);
 	bool save_all_collections(std::string path, col_map_t &cols);
 	bool add_collection(col_map_t &cols, std::string path, std::string name, std::string abbr);
 	bool remove_collection(col_map_t &cols, std::string path, std::string abbr);

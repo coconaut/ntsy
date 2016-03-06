@@ -3,6 +3,7 @@
 
 class NtsyConfig
 {
+	bool m_is_loaded;
 	std::string m_ntsy_root;
 	std::string m_editor;
 	int m_console_color;
@@ -21,10 +22,11 @@ public:
 	void set_console_color(int color) { m_console_color = color; }
 	int get_heading_color() { return m_heading_color; }
 	void set_heading_color(int color) { m_heading_color = color; }
+	bool is_loaded() { return m_is_loaded; }
 
 	// --- methods ---
 	bool save();
-	void load();
+	bool load();
 	std::string get_index_path();
 	
 	

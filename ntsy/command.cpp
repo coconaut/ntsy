@@ -123,7 +123,7 @@ namespace cmd {
 		auto path = config->get_index_path();
 		auto cols = col::get_all_collections(path);
 		if (col::add_collection(cols, path, args[1], args[2]))
-			col::list_all_collections(cols);
+			col::list_all_collections(cols, config);
 		else
 			std::cout << "Oh noooo!!! Unable to add collection. Please make sure abbreviation is unique!!! :[" << std::endl;
 
@@ -145,7 +145,7 @@ namespace cmd {
 		std::string path = config->get_index_path();
 		auto cols = col::get_all_collections(path);
 		if (col::remove_collection(cols, path, args[1]))
-			col::list_all_collections(cols);
+			col::list_all_collections(cols, config);
 		else
 			std::cout << "Oh no noooo!!! Unable to erase collection with the abbreviation: " << args[1] << "!!! :[" << std::endl;
 
@@ -168,10 +168,10 @@ namespace cmd {
 
 			// display if any notes, error msg otherwise
 			if (!handle_no_notes(notes, args[1])) 
-				note::list_all_notes(note_path);
+				note::list_all_notes(note_path, config);
 		}
 		else 
-			col::list_all_collections(config->get_index_path());
+			col::list_all_collections(config->get_index_path(), config);
 		
 		return true;
 	}
@@ -243,7 +243,7 @@ namespace cmd {
 		
 		while (true) {
 			std::cout << col_name << std::endl << "---" << std::endl << std::endl;
-			note::list_all_notes(notes);
+			note::list_all_notes(notes, config);
 			skip_some_lines(5);
 			print_instructions("Enter a sub-command and note #. Enter 'help' for help. Enter 'exit' to quit.", config);
 			std::cin >> sub_cmd;

@@ -9,7 +9,7 @@
 const char *CONFIG_PATH = "./.ntsyconfig";
 
 NtsyConfig::NtsyConfig() {
-	this->load();
+	m_is_loaded = this->load();
 }
 
 std::string NtsyConfig::get_index_path() {
@@ -30,14 +30,18 @@ bool NtsyConfig::save() {
 	return true;
 }
 
-void NtsyConfig::load() {
+bool NtsyConfig::load() {
 	std::ifstream inf(CONFIG_PATH);
 	if (!inf) {
-		std::cout << "Unable to open config!!" << std::endl;
-		return;
+		std::cout << "Unable to open config!!! (^.^)" 
+			<< std::endl 
+			<< "Have you run 'ntsy init' yet?" 
+			<< std::endl;
+		return false;
 	}
 	inf >> *this;
 	inf.close();
+	return true;
 }
 
 std::ostream& operator<< (std::ostream &out, const NtsyConfig &c) {

@@ -2,6 +2,7 @@
 #include <ctime>
 #include <string>
 #include <vector>
+#include "config.h"
 #include "recordable.h"
 
 namespace note {
@@ -35,11 +36,11 @@ namespace note {
 	};
 
 	// declarations --------------
-	void print_header();
+	void print_header(NtsyConfig *config);
 	std::vector<Note> get_all_notes(std::string path);
 	bool add_note(std::string text, std::string path);
-	void list_all_notes(std::vector<Note> &notes);
-	void list_all_notes(std::string path);
+	void list_all_notes(std::vector<Note> &notes, NtsyConfig *config);
+	void list_all_notes(std::string path, NtsyConfig *config);
 	bool save_all_notes(std::string path, std::vector<Note> &notes);
 	bool remove_note(std::string path, std::vector<Note> &notes, int noteId);
 	void read_note(std::vector<Note> &notes, int id);

@@ -47,10 +47,10 @@ namespace note {
 	/**
 	 * Prints a header for note list.
 	 */ 
-	void print_header()
+	void print_header(NtsyConfig *config)
 	{
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
-		change_console_color(11, &csbi);
+		change_console_color(config->get_heading_color(), &csbi);
 		std::cout << std::left
 			<< std::setw(5) << "#"
 			<< std::setw(txt::MAINCOLSIZE) << "Note"
@@ -165,9 +165,9 @@ namespace note {
 	/**
 	* Lists all notes.
 	*/
-	void list_all_notes(std::vector<Note> &notes)
+	void list_all_notes(std::vector<Note> &notes, NtsyConfig *config)
 	{
-		print_header();
+		print_header(config);
 		// use the const ref so we don't copy
 		for (const auto &iter : notes) {
 			iter.pretty_print();
@@ -178,10 +178,10 @@ namespace note {
 	/**
 	* Lists all notes.
 	*/
-	void list_all_notes(std::string path)
+	void list_all_notes(std::string path, NtsyConfig *config)
 	{
 		auto notes = get_all_notes(path);
-		list_all_notes(notes);
+		list_all_notes(notes, config);
 	}
 
 	/**
