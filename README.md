@@ -6,7 +6,9 @@ ntsy (pronounced "notesy") is a lightweight command-line interface for keeping s
 
 ## Status
 
-Under active development!!!
+Taking a break... 
+Still needs init function.
+Known issue: indexes >= 10 in a colleciton are not being found in interactive mode sub-commands.
 
 ## Commands
 
